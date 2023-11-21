@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "334267695723",
+    "project_id": "fastparking-5c192",
+    "storage_bucket": "fastparking-5c192.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334267695723:android:94cdd77b6c78e7c46a272e",
+        "android_client_info": {
+          "package_name": "com.example.fastparking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-BMJ544WuwKVGeGPH_V8uBe1f0viHgrw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

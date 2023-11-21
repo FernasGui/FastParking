@@ -1,0 +1,28 @@
+
+name: fastparking
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  firebase_core: ^1.24.0
+  firebase_auth: ^3.3.3
+  cloud_firestore: ^3.1.5
+  firebase_storage: ^10.2.4
+  firebase_core_platform_interface: ^4.5.1
+  firebase_messaging: ^13.0.4 # will satisfy your firebase core things that depend on ^4.5.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
