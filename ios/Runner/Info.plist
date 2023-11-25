@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Esta aplicação necessita de acesso à sua localização para mostrar sua posição atual no mapa.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Esta aplicação necessita de acesso à sua localização para mostrar sua posição atual no mapa.</string>
+
+	<key>GoogleMapsAPIKey</key>
+    <string>AIzaSyAlTFic1JbjdtOJj1_oz-igg8DwqFQXeX4</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

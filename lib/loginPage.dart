@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'mapeamento.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -14,6 +16,10 @@ class _LoginPageState extends State<LoginPage> {
     String password = passwordController.text;
     // Aqui você pode implementar a lógica de autenticação
     print('Email: $email, Password: $password');
+
+      Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => MapScreen()),
+  );
   }
 
   @override
@@ -49,17 +55,17 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 40),
             // Botão de Login
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-                minimumSize: Size.fromHeight(50), // altura do botão
+           ElevatedButton(
+           style: ElevatedButton.styleFrom(
+             primary: Colors.blue,
+              shape: RoundedRectangleBorder(
+               borderRadius: BorderRadius.circular(30.0),
+                 ),
+                   minimumSize: Size.fromHeight(50), // altura do botão
+                  ),
+                   onPressed: _loginButtonPressed, // Aqui você passa a referência para a função
+                   child: Text('Login'),
               ),
-              onPressed: _loginButtonPressed,
-              child: Text('Login'),
-            ),
            // TextButton(
            //   onPressed: () {
            //     // Implement
