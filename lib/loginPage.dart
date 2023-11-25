@@ -1,3 +1,5 @@
+import 'package:fastparking/mapeamento.dart';
+import 'package:fastparking/registerPage.dart';
 import 'package:flutter/material.dart';
 
 
