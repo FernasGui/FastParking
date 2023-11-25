@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:fastparking/qrcode.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -17,6 +18,19 @@ class _MapScreenState extends State<MapScreen> {
   List<Marker> markers = [];
   LatLng? currentUserLocation;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // GlobalKey para o Scaffold
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Atualiza o índice selecionado
+    });
+
+    if (index == 2) { // Se o índice do QR Code for 2
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => QrCodePage(),
+      ));
+    }
+    // Adicione mais condições if-else para outros ícones se necessário
+  }
   @override
   void initState() {
     super.initState();
@@ -174,8 +188,10 @@ class _MapScreenState extends State<MapScreen> {
         84.0, // 3 cm em pixels. Pode precisar ajustar baseado na densidade de pixels do dispositivo.
       ),
       bottomNavigationBar: BottomNavigationBar(
-  type: BottomNavigationBarType.fixed, // Isso mantém os ícones centrados se você tiver mais de três itens
-  items: [
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex, // Usa a variável _selectedIndex
+        onTap: _onItemTapped, // Define o método _onItemTapped
+        items: [
     BottomNavigationBarItem(
       icon: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
@@ -191,12 +207,12 @@ class _MapScreenState extends State<MapScreen> {
       label: 'Transporte',
     ),
     BottomNavigationBarItem(
-      icon: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
-        child: Image.asset('imagens/qrcode.png', width: 60, height: 60), // Tamanho ajustado para os ícones
-      ),
-      label: 'QR Code',
-    ),
+            icon: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              child: Image.asset('imagens/qrcode.png', width: 60, height: 60),
+            ),
+            label: 'QR Code',
+          ),
     BottomNavigationBarItem(
       icon: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
@@ -232,3 +248,4 @@ class FloatingActionButtonLocationCustom extends FloatingActionButtonLocation {
     return Offset(standardOffset.dx, standardOffset.dy - offsetY);
   }
 }
+

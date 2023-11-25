@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fastparking/mapeamento.dart';
 
 class MenuPrincipal extends StatefulWidget {
   MenuPrincipal({Key? key}) : super(key: key);
@@ -49,7 +48,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
           ),
           _buildDrawerItem(
             icon: Icons.drive_eta,
-            text: 'Inserir matrícula',
+            text: 'Gestão de matrículas',
             onTap: () {
               // Ação para Inserir matrícula
             },
