@@ -8,7 +8,7 @@ class QrCodePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Code'),
+        title: const Text('QR Code'),
       ),
       body: Stack(
         alignment: Alignment.center,

@@ -183,7 +183,7 @@ class _MapScreenState extends State<MapScreen> {
            _addPredefinedMarkers();
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocationCustom(
+      floatingActionButtonLocation: const FloatingActionButtonLocationCustom(
         FloatingActionButtonLocation.endFloat, // ou outra posição que você estiver usando
         84.0, // 3 cm em pixels. Pode precisar ajustar baseado na densidade de pixels do dispositivo.
       ),

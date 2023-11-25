@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
             // Botão de Login
            ElevatedButton(
            style: ElevatedButton.styleFrom(
-             primary: Colors.blue,
+             primary:  Color(0xFF69285f),
               shape: RoundedRectangleBorder(
                borderRadius: BorderRadius.circular(30.0),
                  ),
@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
           },
          child: Text(
         'Esqueceu a senha?',
-         style: TextStyle(color: Colors.blue),
+         style: TextStyle(color:  Color(0xFF69285f)),
         ),
         ),
 
