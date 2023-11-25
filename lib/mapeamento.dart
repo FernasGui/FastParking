@@ -1,3 +1,4 @@
+import 'package:fastparking/menuPrincipal.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
@@ -15,12 +16,12 @@ class _MapScreenState extends State<MapScreen> {
   GooglePlace? googlePlace;
   List<Marker> markers = [];
   LatLng? currentUserLocation;
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // GlobalKey para o Scaffold
   @override
   void initState() {
     super.initState();
-    googlePlace = GooglePlace("AIzaSyAlTFic1JbjdtOJj1_oz-igg8DwqFQXeX4");
-     _determinePosition();
+    googlePlace = GooglePlace("SUA_API_KEY");
+    _determinePosition();
   }
 
   void _determinePosition() async {
@@ -72,73 +73,107 @@ class _MapScreenState extends State<MapScreen> {
     _mapController = controller;
   }
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: TextField(
-        decoration: const InputDecoration(
-          hintText: 'Pesquisar localizações',
-          border: InputBorder.none,
-          suffixIcon: Icon(Icons.search),
-        ),
-          onSubmitted: (String value) async {
-          var result = await googlePlace!.search.getTextSearch(value);
-          if (result != null && result.results != null && mounted) {
-            setState(() {
-              markers.clear();
-              for (var place in result.results!) {
-                if (place.geometry != null && place.geometry!.location != null) {
-                  markers.add(
-                    Marker(
-                      markerId: MarkerId(place.placeId!),
-                      
-                      position: LatLng( place.geometry?.location?.lat ?? 0, place.geometry?.location?.lng ?? 0, // Usar ? após location
-                    ),
-                      infoWindow: InfoWindow(title: place.name),
-                    ),
-                  );
-                }
-              }
-            });
-          }
-        },
-      ),
-      leading: IconButton(
-        icon: Icon(Icons.menu),
-        onPressed: () {
-          // Implementar abertura do drawer menu
-        },
-      ),
-    ),
-    body: currentUserLocation == null
-      ? Center(child: CircularProgressIndicator())
-      : GoogleMap(
-          onMapCreated: onMapCreated,
-          markers: Set.from(markers),
-          initialCameraPosition: CameraPosition(
-            target: currentUserLocation ?? LatLng(0, 0), 
-            zoom: 14.0,
+@override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey, // Atribuir o GlobalKey ao Scaffold
+      appBar: AppBar(
+        title: TextField(
+          decoration: const InputDecoration(
+            hintText: 'Pesquisar localizações',
+            border: InputBorder.none,
+            suffixIcon: Icon(Icons.search),
           ),
+          onSubmitted: (String value) async {
+            // ... seu código de pesquisa
+          },
         ),
-    floatingActionButton: FloatingActionButton(
-      child: Icon(Icons.place),
-      onPressed: () {
-        // Implementar adição dos marcadores personalizados
-      },
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer(); // Usar o GlobalKey para abrir o Drawer
+          },
+        ),
+      ),
+      drawer: Drawer(
+        child: MenuPrincipal(), // Certifique-se de que este é o nome correto da classe do seu menu
+      ),
+      body: currentUserLocation == null
+        ? Center(child: CircularProgressIndicator())
+        : GoogleMap(
+            onMapCreated: onMapCreated,
+            markers: Set.from(markers),
+            initialCameraPosition: CameraPosition(
+              target: currentUserLocation ?? LatLng(0, 0),
+              zoom: 14.0,
+            ),
+          ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.place),
+        onPressed: () {
+          // Implementar adição dos marcadores personalizados
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocationCustom(
+        FloatingActionButtonLocation.endFloat, // ou outra posição que você estiver usando
+        84.0, // 3 cm em pixels. Pode precisar ajustar baseado na densidade de pixels do dispositivo.
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+  type: BottomNavigationBarType.fixed, // Isso mantém os ícones centrados se você tiver mais de três itens
+  items: [
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Image.asset('imagens/carro.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+      ),
+      label: 'Carro',
     ),
-    bottomNavigationBar: BottomNavigationBar(
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Carro'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_transit), label: 'Transporte'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_walk), label: 'Caminhada'),
-        // Adicione mais itens conforme necessário
-      ],
-      // Implementar a lógica de navegação
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Image.asset('imagens/mensagem.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+      ),
+      label: 'Transporte',
     ),
-    drawer: Drawer(
-      // Implementar o conteúdo do menu
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Image.asset('imagens/qrcode.png', width: 60, height: 60), // Tamanho ajustado para os ícones
+      ),
+      label: 'QR Code',
     ),
-  );
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Image.asset('imagens/Parque.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+      ),
+      label: 'Parque',
+    ),
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Image.asset('imagens/informação.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+      ),
+      label: 'Informação',
+    ),
+  ],
+  // Implementar a lógica de navegação
+),
+
+    );
+  }
+}
+class FloatingActionButtonLocationCustom extends FloatingActionButtonLocation {
+  final FloatingActionButtonLocation location;
+  final double offsetY; // Offset negativo para subir o botão
+
+  const FloatingActionButtonLocationCustom(this.location, this.offsetY);
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    // Obtém o Offset padrão para a localização dada
+    final Offset standardOffset = location.getOffset(scaffoldGeometry);
+    // Retorna um novo Offset, ajustando o Y com o valor negativo de offsetY
+    return Offset(standardOffset.dx, standardOffset.dy - offsetY);
   }
 }

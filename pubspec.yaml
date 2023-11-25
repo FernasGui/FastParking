@@ -33,3 +33,8 @@ flutter:
 
   assets:
     - imagens/begin.png
+    - imagens/carro.png
+    - imagens/mensagem.png
+    - imagens/qrcode.png
+    - imagens/Parque.png
+    - imagens/informação.png
