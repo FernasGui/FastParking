@@ -39,13 +39,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
               // Ação para Localização
             },
           ),
-          _buildDrawerItem(
-            icon: Icons.settings,
-            text: 'Definições',
-            onTap: () {
-              // Ação para Definições
-            },
-          ),
+          
           _buildDrawerItem(
             icon: Icons.history,
             text: 'Histórico',
@@ -74,6 +68,15 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
               // Ação para Ofertas
             },
           ),
+
+          _buildDrawerItem(
+            icon: Icons.settings,
+            text: 'Definições',
+            onTap: () {
+              // Ação para Definições
+            },
+          ),
+
           Divider(),
           _buildDrawerItem(
             icon: Icons.logout,

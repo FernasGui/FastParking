@@ -24,6 +24,43 @@ class _MapScreenState extends State<MapScreen> {
     _determinePosition();
   }
 
+   void _addMarkerAtPosition(LatLng position, String markerId, String title, String snippet) {
+  final marker = Marker(
+    markerId: MarkerId(markerId),
+    position: position,
+    infoWindow: InfoWindow(title: title, snippet: snippet),
+  );
+
+  setState(() {
+    markers.add(marker);
+  });
+}
+
+  void _addPredefinedMarkers() {
+  // Adicionar um marcador no Google Plex, por exemplo
+  _addMarkerAtPosition(
+    const LatLng(38.750623, -9.155030),
+    'parque_cidadeUniversitaria',
+    'Parque Estacionamento Cidade Universitária ',
+    'Lotação: 400/400',
+  );
+
+      _addMarkerAtPosition(
+      const LatLng(38.7502099, -9.1594531),
+      'parque_estadioUniversitario',
+      'Parque Estacionamento Saba Estádio Universitário',
+      'Lotação: 172/200',
+    );
+
+    _addMarkerAtPosition(
+      const LatLng(38.7559056, -9.1514876),
+      'parque_campoGrande',
+      'Parque Estacionamento Campo Grande ',
+      'Lotação: 65/150',
+    );
+  }
+
+
   void _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -84,10 +121,28 @@ class _MapScreenState extends State<MapScreen> {
             border: InputBorder.none,
             suffixIcon: Icon(Icons.search),
           ),
-          onSubmitted: (String value) async {
-            // ... seu código de pesquisa
-          },
-        ),
+           onSubmitted: (String value) async {
+          var result = await googlePlace!.search.getTextSearch(value);
+          if (result != null && result.results != null && mounted) {
+            setState(() {
+              markers.clear();
+              for (var place in result.results!) {
+                if (place.geometry != null && place.geometry!.location != null) {
+                  markers.add(
+                    Marker(
+                      markerId: MarkerId(place.placeId!),
+                      
+                      position: LatLng( place.geometry?.location?.lat ?? 0, place.geometry?.location?.lng ?? 0, // Usar ? após location
+                    ),
+                      infoWindow: InfoWindow(title: place.name),
+                    ),
+                  );
+                }
+              }
+            });
+          }
+        },
+      ),
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
@@ -111,7 +166,7 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.place),
         onPressed: () {
-          // Implementar adição dos marcadores personalizados
+           _addPredefinedMarkers();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocationCustom(
