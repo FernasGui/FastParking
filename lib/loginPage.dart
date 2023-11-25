@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'mapeamento.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -80,6 +79,15 @@ class _LoginPageState extends State<LoginPage> {
          style: TextStyle(color: Colors.blue),
         ),
         ),
+
+        // Aqui adiciona a página de registo para quem não tem conta criar
+        TextButton(
+              child: Text('Não tem uma conta? Registre-se aqui.'),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => RegisterPages()));
+               // Navigator.of(context).push(MaterialPageRoute(builder: (context) => RegisterPage()));
+              },
+            ),
         // Você pode querer adicionar um espaçamento ou um divisor aqui, se necessário
         SizedBox(height: 20)])));
        
