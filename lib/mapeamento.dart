@@ -19,6 +19,7 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? currentUserLocation;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // GlobalKey para o Scaffold
   int _selectedIndex = 0;
+  
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index; // Atualiza o índice selecionado
@@ -34,7 +35,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    googlePlace = GooglePlace("SUA_API_KEY");
+    googlePlace = GooglePlace("AIzaSyAlTFic1JbjdtOJj1_oz-igg8DwqFQXeX4");
     _determinePosition();
   }
 
@@ -167,16 +168,15 @@ class _MapScreenState extends State<MapScreen> {
       drawer: Drawer(
         child: MenuPrincipal(), // Certifique-se de que este é o nome correto da classe do seu menu
       ),
-      body: currentUserLocation == null
-        ? Center(child: CircularProgressIndicator())
-        : GoogleMap(
-            onMapCreated: onMapCreated,
-            markers: Set.from(markers),
-            initialCameraPosition: CameraPosition(
-              target: currentUserLocation ?? LatLng(0, 0),
-              zoom: 14.0,
-            ),
-          ),
+        body: GoogleMap(
+      onMapCreated: onMapCreated,
+      markers: Set.from(markers),
+      initialCameraPosition: CameraPosition(
+        // Se currentUserLocation for não nulo, use-o; caso contrário, use uma localização padrão
+        target: currentUserLocation ?? LatLng(38.7478, -9.1534), // ISCTE como fallback
+        zoom: 14.0,
+      ),
+    ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.place),
         onPressed: () {
