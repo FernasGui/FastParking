@@ -1,3 +1,4 @@
+import 'package:fastparking/customButton.dart';
 import 'package:fastparking/menuPrincipal.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -24,6 +25,10 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _selectedIndex = index; // Atualiza o índice selecionado
     });
+   
+    if (index == 3) { // Se o índice do QR Code for 2
+      _addPredefinedMarkers();
+      }
 
     if (index == 2) { // Se o índice do QR Code for 2
       Navigator.of(context).push(MaterialPageRoute(
@@ -183,9 +188,10 @@ class _MapScreenState extends State<MapScreen> {
            _addPredefinedMarkers();
         },
       ),
-      floatingActionButtonLocation: const FloatingActionButtonLocationCustom(
-        FloatingActionButtonLocation.endFloat, // ou outra posição que você estiver usando
-        84.0, // 3 cm em pixels. Pode precisar ajustar baseado na densidade de pixels do dispositivo.
+      floatingActionButtonLocation: const FloatingActionButtonCustom(
+        FloatingActionButtonLocation.endFloat, 
+        10.0,
+        88.0,  // 3 cm em pixels. Pode precisar ajustar baseado na densidade de pixels do dispositivo.
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -234,18 +240,5 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-class FloatingActionButtonLocationCustom extends FloatingActionButtonLocation {
-  final FloatingActionButtonLocation location;
-  final double offsetY; // Offset negativo para subir o botão
 
-  const FloatingActionButtonLocationCustom(this.location, this.offsetY);
-
-  @override
-  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
-    // Obtém o Offset padrão para a localização dada
-    final Offset standardOffset = location.getOffset(scaffoldGeometry);
-    // Retorna um novo Offset, ajustando o Y com o valor negativo de offsetY
-    return Offset(standardOffset.dx, standardOffset.dy - offsetY);
-  }
-}
 

@@ -1,3 +1,4 @@
+import 'package:fastparking/gestaoPagamento.dart';
 import 'package:flutter/material.dart';
 import 'package:fastparking/loginPage.dart';
 class MenuPrincipal extends StatefulWidget {
@@ -31,7 +32,9 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
             icon: Icons.account_balance_wallet,
             text: 'Gestão de saldo',
             onTap: () {
-              // Ação para Gestão de saldo
+               Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => GestaoPagamento(),
+      ));
             },
           ),
           _buildDrawerItem(
