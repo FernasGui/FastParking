@@ -32,7 +32,7 @@ class _MapScreenState extends State<MapScreen> {
 
     if (index == 2) { // Se o índice do QR Code for 2
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => QrCodePage(),
+        builder: (context) => const QrCodePage(),
       ));
     }
     // Adicione mais condições if-else para outros ícones se necessário
@@ -130,6 +130,7 @@ class _MapScreenState extends State<MapScreen> {
     _mapController = controller;
   }
 
+
 @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,7 +165,7 @@ class _MapScreenState extends State<MapScreen> {
         },
       ),
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () {
             _scaffoldKey.currentState?.openDrawer(); // Usar o GlobalKey para abrir o Drawer
           },
@@ -178,14 +179,16 @@ class _MapScreenState extends State<MapScreen> {
       markers: Set.from(markers),
       initialCameraPosition: CameraPosition(
         // Se currentUserLocation for não nulo, use-o; caso contrário, use uma localização padrão
-        target: currentUserLocation ?? LatLng(38.7478, -9.1534), // ISCTE como fallback
+        target: currentUserLocation ?? const LatLng(38.7478, -9.1534), // ISCTE como fallback
         zoom: 14.0,
       ),
     ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.place),
+        child: const Icon(Icons.place),
+        backgroundColor: const Color.fromRGBO(163, 53, 101, 1), // Cor de fundo do botão
+        foregroundColor: Colors.white,
         onPressed: () {
-           _addPredefinedMarkers();
+           _moveCameraToUserLocation();
         },
       ),
       floatingActionButtonLocation: const FloatingActionButtonCustom(
@@ -197,39 +200,41 @@ class _MapScreenState extends State<MapScreen> {
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex, // Usa a variável _selectedIndex
         onTap: _onItemTapped, // Define o método _onItemTapped
-        items: [
+        items:  [
     BottomNavigationBarItem(
       icon: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
-        child: Image.asset('imagens/carro.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+        padding: EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Icon(Icons.directions_car_filled_sharp,  size: 50, color:Color.fromRGBO(163, 53, 101, 1))
+        //Image.asset('imagens/carro.png', width: 45, height: 45), // Tamanho ajustado para os ícones
       ),
       label: 'Carro',
     ),
     BottomNavigationBarItem(
       icon: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
-        child: Image.asset('imagens/mensagem.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+        padding: EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Image.asset('imagens/Chat.png', width: 50, height: 50), // Tamanho ajustado para os ícones
       ),
-      label: 'Transporte',
+      label: 'Chat', 
     ),
     BottomNavigationBarItem(
             icon: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
-              child: Image.asset('imagens/qrcode.png', width: 60, height: 60),
+              padding: EdgeInsets.symmetric(vertical: 6.0),
+              child: Icon(Icons.qr_code_scanner_rounded,  size: 65, color:Color.fromRGBO(163, 53, 101, 1))
             ),
             label: 'QR Code',
           ),
     BottomNavigationBarItem(
       icon: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
-        child: Image.asset('imagens/Parque.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+        padding: EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Image.asset('imagens/Parking.png', width: 50, height: 50), // Tamanho ajustado para os ícones
       ),
       label: 'Parque',
     ),
     BottomNavigationBarItem(
       icon: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
-        child: Image.asset('imagens/informação.png', width: 45, height: 45), // Tamanho ajustado para os ícones
+        padding: EdgeInsets.symmetric(vertical: 6.0), // Ajuste este valor conforme necessário
+        child: Icon(Icons.info,  size: 50, color:Color.fromRGBO(163, 53, 101, 1))
+        //Image.asset('imagens/informação.png', width: 45, height: 45), // Tamanho ajustado para os ícones
       ),
       label: 'Informação',
     ),

@@ -14,60 +14,131 @@ class GestaoPagamento extends StatefulWidget {
 class _GestaoPagamentoState extends State<GestaoPagamento> {
   @override
   Widget build(BuildContext context) {
+    // Espaçamento no topo da tela, ajustável conforme necessário
+    double topPadding = MediaQuery.of(context).size.height * 0.02;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Gestão de Saldo'),
       ),
-      body: Column(
-        children: [
-          // ... Outros widgets ...
-
-          // Seção dos botões de pagamento
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: topPadding),
+            // Logotipo do topo (ajustar o caminho para o logotipo conforme necessário)
+            Image.asset('imagens/logo.png', height: 160),
+            SizedBox(height: topPadding),
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'CARREGUE A SUA CONTA',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Selecione o método de pagamento e carregue a sua conta Fastparking. Carregamento com o valor mínimo de 5€.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(
-                  'CARREGUE A SUA CONTA',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Selecione o método de pagamento e carregue a sua conta EMEL com 5€ a 100€ sem qualquer comissão adicional. O valor que carregar fica disponível para utilizar no ePARK e GIRA.',
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      MetodoCarregamentoButton(
-                        imagePath: 'imagens/mbway.png', // Substitua pelo caminho correto da sua imagem
-                       
-                        onTap: () { 
 
-                         },
-                      ),
-                      MetodoCarregamentoButton(
-                        imagePath: 'imagens/paypal.png',
-                       
-                        onTap: () { 
-
-                        },
-                      ),
-                      MetodoCarregamentoButton(
-                        imagePath: 'imagens/Visa-Mastercard.jpg',
-                        
-                        onTap: () { print('Visa/MasterCard selecionado'); },
-                      ),
-                    ],
-                  ),
+                MetodoCarregamentoButton(
+                  imagePath: 'imagens/mbway.png',
+                  onTap: () {
+                    _showBottomSheet(context);
+                  },
+                ),
+                MetodoCarregamentoButton(
+                  imagePath: 'imagens/Paypal.png',
+                  onTap: () {
+                    // Lógica para o botão PayPal
+                  },
+                ),
+                
+                MetodoCarregamentoButton(
+                  imagePath: 'imagens/Visa-Mastercard.png',
+                  onTap: () {
+                    // Lógica para o botão Visa/MasterCard
+                  },
+                ),
               ],
             ),
-          ),
-        ],
+            SizedBox(height: 20), // Espaço adicional no final da tela
+          ],
+        ),
       ),
     );
   }
+
+      void _showBottomSheet(BuildContext context) {
+  TextEditingController phoneNumberController = TextEditingController();
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext bc) {
+      return Container(
+        padding: EdgeInsets.all(20),
+        child: Wrap(
+          children: <Widget>[
+            Text(
+              'O método de pagamento selecionado enviará uma confirmação de pagamento para você. Confirme se o número do seu telemóvel está correto.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: <Widget>[
+                Text(
+                  '+351',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: phoneNumberController,
+                    decoration: InputDecoration(
+                      hintText: 'Digite seu número de telemóvel',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Align(
+            alignment: Alignment.centerRight,
+            child: 
+            ElevatedButton(
+              onPressed: () {
+                print('Número de telemóvel: +351${phoneNumberController.text}');
+                Navigator.pop(context);
+              },
+              child: Text('Confirme'),
+              style: ElevatedButton.styleFrom(
+                primary:  Color.fromRGBO(163, 53, 101, 1),
+                onPrimary: Colors.white,
+              ),
+            )
+            )
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
 }
 
 class MetodoCarregamentoButton extends StatelessWidget {
@@ -108,10 +179,11 @@ class MetodoCarregamentoButton extends StatelessWidget {
       alignment: Alignment.center, // Centralizar a imagem dentro do Container
       child: Image.asset(
         imagePath,
-        fit: BoxFit.fill, // Isso fará com que a imagem preencha todo o espaço do botão
+        fit: BoxFit.cover, // Isso fará com que a imagem preencha todo o espaço do botão
       ),
     ),
   ),
 );
   }
+
 }
