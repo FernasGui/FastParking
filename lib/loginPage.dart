@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fastparking/mapeamento.dart';
 import 'package:fastparking/registerPage.dart';
@@ -11,14 +12,49 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _loginButtonPressed() {
+  void _loginButtonPressed() async {
     String email = emailController.text;
     String password = passwordController.text;
-    print('Email: $email, Password: $password');
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => MapScreen()),
-    );
+
+    try {
+      // Tenta fazer o login com o e-mail e senha
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      print('Login bem-sucedido: ${userCredential.user}');
+
+      // Navegue para a próxima tela se o login for bem-sucedido
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => MapScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      // Trata erros de autenticação
+      String errorMessage = 'Ocorreu um erro ao fazer login. Por favor, tente novamente.';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'Nenhum usuário encontrado para esse e-mail.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Senha incorreta fornecida para esse usuário.';
+      }
+
+      // Mostra um diálogo de erro
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Erro de Login"),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                child: Text("Fechar"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -32,27 +68,32 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).size.height * 0.0), // Espaço adicional no topo
-              Image.asset('imagens/logo.png', width: 275, height: 250), // Adicione o logotipo aqui
-              SizedBox(height: 30), // Espaço entre o logotipo e os campos de texto
+              SizedBox(height: MediaQuery.of(context).size.height * 0.1), // Espaço adicional no topo
+              Image.asset('imagens/logo.png', width: 135, height: 135), // Adicione o logotipo aqui
+              SizedBox(height: 60), // Espaço entre o logotipo e os campos de texto
               // Campo de texto para o e-mail
-              TextField(
+              TextFormField(
                 controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
+                  
                   labelText: 'E-mail',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(90.0)),
+
                 ),
-                keyboardType: TextInputType.emailAddress,
+                
+                
               ),
               SizedBox(height: 20),
               // Campo de texto para a senha
-              TextField(
+              TextFormField(
                 controller: passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(90.0)),
                 ),
                 obscureText: true,
+                
               ),
               SizedBox(height: 40),
               // Botão de Login

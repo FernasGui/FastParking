@@ -1,8 +1,8 @@
-import 'package:fastparking/mapeamento.dart';
-import 'package:fastparking/registerPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fastparking/customButton.dart';
-
 
 class GestaoPagamento extends StatefulWidget {
   const GestaoPagamento({Key? key}) : super(key: key);
@@ -14,19 +14,20 @@ class GestaoPagamento extends StatefulWidget {
 class _GestaoPagamentoState extends State<GestaoPagamento> {
   @override
   Widget build(BuildContext context) {
-    // Espaçamento no topo da tela, ajustável conforme necessário
-    double topPadding = MediaQuery.of(context).size.height * 0.02;
+    double topPadding = MediaQuery.of(context).size.height * 0.01;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Gestão de Saldo'),
+        backgroundColor:  Color.fromRGBO(163, 53, 101, 1), 
+        foregroundColor: Color.fromRGBO(255, 255, 255, 1),
+       
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: topPadding),
-            // Logotipo do topo (ajustar o caminho para o logotipo conforme necessário)
-            Image.asset('imagens/logo.png', height: 160),
+            Image.asset('imagens/logo.png', width: 200, height: 150),
             SizedBox(height: topPadding),
             Padding(
               padding: EdgeInsets.all(16.0),
@@ -46,12 +47,9 @@ class _GestaoPagamentoState extends State<GestaoPagamento> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-
                 MetodoCarregamentoButton(
                   imagePath: 'imagens/mbway.png',
-                  onTap: () {
-                    _showBottomSheet(context);
-                  },
+                  onTap: () => _showBottomSheet(context),
                 ),
                 MetodoCarregamentoButton(
                   imagePath: 'imagens/Paypal.png',
@@ -59,7 +57,6 @@ class _GestaoPagamentoState extends State<GestaoPagamento> {
                     // Lógica para o botão PayPal
                   },
                 ),
-                
                 MetodoCarregamentoButton(
                   imagePath: 'imagens/Visa-Mastercard.png',
                   onTap: () {
@@ -68,122 +65,162 @@ class _GestaoPagamentoState extends State<GestaoPagamento> {
                 ),
               ],
             ),
-            SizedBox(height: 20), // Espaço adicional no final da tela
+            SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-      void _showBottomSheet(BuildContext context) {
+  void _showBottomSheet(BuildContext context) {
   TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController chargeAmountController = TextEditingController();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     builder: (BuildContext bc) {
-      return Container(
-        padding: EdgeInsets.all(20),
-        child: Wrap(
-          children: <Widget>[
-            Text(
-              'O método de pagamento selecionado enviará uma confirmação de pagamento para você. Confirme se o número do seu telemóvel está correto.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
+      return Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Use min to make the column wrap content
               children: <Widget>[
                 Text(
-                  '+351',
+                  'Insira o valor a carregar e confirme se o número do seu telemóvel está correto. Será enviada uma confirmação para a sua aplicação Mb Way.',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    controller: phoneNumberController,
-                    decoration: InputDecoration(
-                      hintText: 'Digite seu número de telemóvel',
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.phone,
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: chargeAmountController,
+                  decoration: InputDecoration(
+                    labelText: 'Valor a carregar',
+                    suffixIcon: Icon(Icons.euro_symbol),
                   ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null || int.tryParse(value) == null || int.parse(value) < 5) {
+                      return 'Valor mínimo: 5€';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: phoneNumberController,
+                  decoration: InputDecoration(
+                    labelText: '+351',
+                    hintText: 'Digite seu número de telemóvel',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || !RegExp(r'^9\d{8}$').hasMatch(value)) {
+                      return 'Digite um número de 9 dígitos que comece com 9';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      // Se o valor e o número do telemóvel forem válidos
+                      final double carregamento = double.tryParse(chargeAmountController.text) ?? 0;
+                      final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+                      // Verifica se o uid não está vazio
+                      if (uid.isNotEmpty) {
+                        // Incrementa o saldo do usuário no Firestore
+                        await FirebaseFirestore.instance.collection('Users').doc(uid).update({
+                          'saldo': FieldValue.increment(carregamento),
+                        });
+
+                         FirebaseFirestore.instance.collection('Histórico').add({
+                          'Data': FieldValue.serverTimestamp(),
+                          'Transação': 'Carregamento' , 
+                          'Valor': carregamento,
+
+                        });
+
+                        // Fecha a BottomSheet após a atualização bem-sucedida
+                        Navigator.pop(context);
+                      } else {
+                        // Mostra uma mensagem de erro se o uid estiver vazio
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Erro ao carregar saldo. Tente novamente.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: Text('Confirmar'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color.fromRGBO(163, 53, 101, 1),
+                    onPrimary: Colors.white,
+                        ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Align(
-            alignment: Alignment.centerRight,
-            child: 
-            ElevatedButton(
-              onPressed: () {
-                print('Número de telemóvel: +351${phoneNumberController.text}');
-                Navigator.pop(context);
-              },
-              child: Text('Confirme'),
-              style: ElevatedButton.styleFrom(
-                primary:  Color.fromRGBO(163, 53, 101, 1),
-                onPrimary: Colors.white,
-              ),
-            )
-            )
-          ],
+              ],
         ),
-      );
+      ),),);
     },
   );
 }
-
-
 }
 
+
 class MetodoCarregamentoButton extends StatelessWidget {
-  final String imagePath; // Adicionado para permitir a especificação do caminho da imagem
-  
+  final String imagePath;
   final VoidCallback onTap;
 
   MetodoCarregamentoButton({
-    required this.imagePath, // Alterado para aceitar o caminho da imagem
-    
+    required this.imagePath,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-  onPressed: onTap,
-  style: ElevatedButton.styleFrom(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(18)),
-    ),
-    primary: Colors.white, // Cor de fundo do botão
-    onPrimary: Color.fromARGB(255, 163, 53, 101), // Cor de fundo do botão ao pressionar
-    padding: EdgeInsets.zero, // Remover o padding interno
-    // Configurar o tamanho mínimo para zero para que o botão seja do tamanho da imagem
-    minimumSize: Size.zero, 
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Remove margens adicionais
-  ),
-  child: Ink(
-    decoration: BoxDecoration(
-      // Aplicar o mesmo borderRadius que o botão para a decoração
-      borderRadius: BorderRadius.all(Radius.circular(18)),
-    ),
-    child: Container(
-      // Configurar as dimensões do Container para corresponder ao tamanho desejado do botão
-      width: 80, // Por exemplo, 80 unidades lógicas
-      height: 80, // Por exemplo, 80 unidades lógicas
-      alignment: Alignment.center, // Centralizar a imagem dentro do Container
-      child: Image.asset(
-        imagePath,
-        fit: BoxFit.cover, // Isso fará com que a imagem preencha todo o espaço do botão
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+        ),
+        primary: Colors.white,
+        onPrimary: Color.fromARGB(255, 163, 53, 101),
+        padding: EdgeInsets.zero,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-    ),
-  ),
-);
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+        ),
+        child: Container(
+          width: 80,
+          height: 80,
+          alignment: Alignment.center,
+          child: Image.asset(
+            imagePath,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
   }
-
 }

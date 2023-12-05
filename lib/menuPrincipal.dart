@@ -1,50 +1,94 @@
-import 'package:fastparking/gestaoPagamento.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fastparking/gestaoMatricula.dart';
+import 'package:fastparking/registarEstacionamento';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fastparking/gestaoPagamento.dart';
 import 'package:fastparking/loginPage.dart';
+
 class MenuPrincipal extends StatefulWidget {
   MenuPrincipal({Key? key}) : super(key: key);
+
   @override
   _MenuPrincipalState createState() => _MenuPrincipalState();
 }
 
 class _MenuPrincipalState extends State<MenuPrincipal> {
-   @override
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String _userName = 'Usuário Anônimo';
+  String _userEmail = 'No Email';
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserInfo();
+  }
+
+ void _getUserInfo() async {
+  User? user = _auth.currentUser;
+  if (user != null) {
+    // Busca o documento do usuário na coleção 'Users' pelo UID
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('Users').doc(user.uid).get();
+
+    // Verifica se o documento existe e possui dados
+    if (userDoc.exists) {
+      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+
+      // Atualiza a UI com o nome e o email do usuário
+      setState(() {
+        _userName = userData?['nome'] ?? 'Usuário Anônimo'; // Substitua 'name' pela chave real usada para o nome na Firestore
+        _userEmail = user.email ?? 'No Email';
+      });
+    }
+  }
+}
+
+  void _logout() async {
+    await _auth.signOut(); // Efetua o logout no Firebase
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), // Redireciona para a tela de login
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const UserAccountsDrawerHeader(
+          UserAccountsDrawerHeader(
             decoration: BoxDecoration(
-              color:  Color(0xFF69285f), // Aqui foi definida a nova cor
+              color: Color(0xFF69285f),
             ),
-            accountName: Text("Guilherme Fernandes"),
-            accountEmail: Text("guilhermefernandes@gmail.com"),
+            accountName: Text(_userName),
+            accountEmail: Text(_userEmail),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                "G",
-                style: TextStyle(fontSize: 40.0, color:  Color(0xFF69285f)), // Adicionei a cor ao texto também
+                _userName.isNotEmpty ? _userName[0] : "U",
+                style: TextStyle(fontSize: 40.0, color: Color.fromRGBO(221, 67, 106, 1),
               ),
             ),
-          ),
+          ), ),
           _buildDrawerItem(
             icon: Icons.account_balance_wallet,
             text: 'Gestão de saldo',
             onTap: () {
-               Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => GestaoPagamento(),
-      ));
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => GestaoPagamento(),
+              ));
             },
           ),
-          _buildDrawerItem(
+           _buildDrawerItem(
             icon: Icons.location_on,
             text: 'Localização',
             onTap: () {
-              // Ação para Localização
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => RegistarEstacionamento(),
+              ));
             },
           ),
-          
           _buildDrawerItem(
             icon: Icons.history,
             text: 'Histórico',
@@ -56,7 +100,8 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
             icon: Icons.drive_eta,
             text: 'Gestão de matrículas',
             onTap: () {
-              // Ação para Inserir matrícula
+              Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => GestaoMatricula()));
             },
           ),
           _buildDrawerItem(
@@ -73,7 +118,6 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
               // Ação para Ofertas
             },
           ),
-
           _buildDrawerItem(
             icon: Icons.settings,
             text: 'Definições',
@@ -81,19 +125,12 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
               // Ação para Definições
             },
           ),
-
-        Divider(),
-_buildDrawerItem(
-  icon: Icons.logout,
-  text: 'Logout',
-  onTap: () {
-    // Supondo que LoginPage está importada corretamente no topo do arquivo
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()), // Substitua LoginPage() pelo widget da sua tela de login
-    );
-  },
-),
+          Divider(),
+          _buildDrawerItem(
+            icon: Icons.logout,
+            text: 'Logout',
+            onTap: _logout,
+          ),
         ],
       ),
     );

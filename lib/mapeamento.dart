@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastparking/customButton.dart';
+import 'package:fastparking/gestaoEstacionamento.dart';
 import 'package:fastparking/menuPrincipal.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
@@ -20,21 +23,33 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? currentUserLocation;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // GlobalKey para o Scaffold
   int _selectedIndex = 0;
+  bool markersEnabled= false;
   
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Atualiza o índice selecionado
-    });
-   
-    if (index == 3) { // Se o índice do QR Code for 2
+ void _onItemTapped(int index) {
+  setState(() {
+    _selectedIndex = index; // Atualiza o índice selecionado
+  });
+
+  if (index == 3) { // Se o índice for 3
+    if (!markersEnabled) { // Se os marcadores não estão habilitados
       _addPredefinedMarkers();
-      }
+      markersEnabled = true;
+    } else { // Se os marcadores estão habilitados
+      removePredefinedMarkers();
+      markersEnabled = false;
+    }
+  }
 
     if (index == 2) { // Se o índice do QR Code for 2
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => const QrCodePage(),
       ));
     }
+
+    if (index == 0) { // Assumindo que o ícone do carro é o primeiro item
+    final estacionamentoManager = EstacionamentoManager(context);
+    estacionamentoManager.mostrarDetalhesEstacionamento();
+  }
     // Adicione mais condições if-else para outros ícones se necessário
   }
   @override
@@ -53,6 +68,11 @@ class _MapScreenState extends State<MapScreen> {
 
   setState(() {
     markers.add(marker);
+  });
+}
+void removePredefinedMarkers() {
+  setState(() {
+    markers.clear();
   });
 }
 
@@ -79,6 +99,12 @@ class _MapScreenState extends State<MapScreen> {
       'Lotação: 65/150',
     );
   }
+
+  Stream<DocumentSnapshot> getUserSaldoStream() {
+  User? user = FirebaseAuth.instance.currentUser;
+  return FirebaseFirestore.instance.collection('Users').doc(user?.uid).snapshots();
+}
+
 
 
   void _determinePosition() async {
@@ -128,60 +154,97 @@ class _MapScreenState extends State<MapScreen> {
 
   void onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    _moveCameraToUserLocation();
   }
 
-
-@override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey, // Atribuir o GlobalKey ao Scaffold
-      appBar: AppBar(
-        title: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Pesquisar localizações',
-            border: InputBorder.none,
-            suffixIcon: Icon(Icons.search),
-          ),
-           onSubmitted: (String value) async {
-          var result = await googlePlace!.search.getTextSearch(value);
-          if (result != null && result.results != null && mounted) {
-            setState(() {
-              markers.clear();
-              for (var place in result.results!) {
-                if (place.geometry != null && place.geometry!.location != null) {
-                  markers.add(
-                    Marker(
-                      markerId: MarkerId(place.placeId!),
-                      
-                      position: LatLng( place.geometry?.location?.lat ?? 0, place.geometry?.location?.lng ?? 0, // Usar ? após location
-                    ),
-                      infoWindow: InfoWindow(title: place.name),
-                    ),
-                  );
-                }
-              }
-            });
-          }
+    User? user = FirebaseAuth.instance.currentUser;
+    Stream<DocumentSnapshot> userSaldoStream = FirebaseFirestore.instance.collection('Users').doc(user?.uid).snapshots();
+
+   return Scaffold(
+    key: _scaffoldKey,
+    appBar: AppBar(
+      title: TextField(
+        decoration: InputDecoration(
+          hintText: 'Pesquisar localizações',
+          border: InputBorder.none,
+          suffixIcon: Icon(Icons.search),
+        ),
+        onSubmitted: (value) async {
+                  var result = await googlePlace!.search.getTextSearch(value);
+                  if (result != null && result.results != null && mounted) {
+                    setState(() {
+                      markers.clear();
+                      for (var place in result.results!) {
+                        if (place.geometry != null && place.geometry!.location != null) {
+                          markers.add(
+                            Marker(
+                              markerId: MarkerId(place.placeId!),
+                              position: LatLng(
+                                place.geometry!.location!.lat!,
+                                place.geometry!.location!.lng!,
+                              ),
+                              infoWindow: InfoWindow(title: place.name),
+                            ),
+                          );
+                        }
+                      }
+                    });
+                  }
+               },
+      ),
+      leading: IconButton(
+        icon: Icon(Icons.menu),
+        onPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
         },
       ),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer(); // Usar o GlobalKey para abrir o Drawer
-          },
+    ),
+    drawer: Drawer(
+      child: MenuPrincipal(), // Substitua pelo seu menu principal
+    ),
+    body: Column(
+      children: [
+        if (user != null)
+          StreamBuilder<DocumentSnapshot>(
+            stream: userSaldoStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
+                Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+                double saldo = data['saldo'] ?? 0.0;
+                return Container(
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  margin: EdgeInsets.only(bottom: 8), // Distância do visor para o mapa
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: [BoxShadow(blurRadius: 2, color: Colors.grey)],
+                  ),
+                  child: Text(
+                    'Saldo: ${saldo.toStringAsFixed(2)}€',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+            },
+          ),
+        Expanded(
+          child: GoogleMap(
+            onMapCreated: onMapCreated,
+            markers: Set.from(markers),
+            initialCameraPosition: CameraPosition(
+              target: currentUserLocation ?? LatLng(38.7478, -9.1534), // Localização inicial
+              zoom: 14.0,
+            ),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false, // Desativa o botão de retorno à localização atual
+            
+          ),
         ),
-      ),
-      drawer: Drawer(
-        child: MenuPrincipal(), // Certifique-se de que este é o nome correto da classe do seu menu
-      ),
-        body: GoogleMap(
-      onMapCreated: onMapCreated,
-      markers: Set.from(markers),
-      initialCameraPosition: CameraPosition(
-        // Se currentUserLocation for não nulo, use-o; caso contrário, use uma localização padrão
-        target: currentUserLocation ?? const LatLng(38.7478, -9.1534), // ISCTE como fallback
-        zoom: 14.0,
-      ),
+      ],
     ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.place),
@@ -245,5 +308,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
+          
+       
 
 

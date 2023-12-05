@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
         width: screenSize.width,
         height: screenSize.height,
             child: Image.asset('imagens/begin.png', // Certifique-se de que a imagem está na pasta correta.
-            fit: BoxFit.fill, // Isso fará com que a imagem cubra toda a tela.
+            fit: BoxFit.cover, // Isso fará com que a imagem cubra toda a tela.
           ),
         ),
     );
