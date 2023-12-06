@@ -1,6 +1,6 @@
-import 'package:fastparking/servicoRegisto.dart';
+import 'package:fastparking/autenticacao/loginPage.dart';
+import 'package:fastparking/autenticacao/servicoRegisto.dart';
 import 'package:flutter/material.dart';
-import 'package:fastparking/loginPage.dart'; // Certifique-se de importar a página de login corretamente
 
 class RegisterPages extends StatefulWidget {
   @override

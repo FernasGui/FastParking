@@ -73,6 +73,7 @@ void _registarEstacionamento() {
 
  @override
 Widget build(BuildContext context) {
+  double topPadding = MediaQuery.of(context).size.height * 0.01;
   return Scaffold(
     appBar: AppBar(
       title: Text('Registar Estacionamento'),
@@ -85,12 +86,12 @@ Widget build(BuildContext context) {
         padding: const EdgeInsets.all(16.0),
         child: ListView( // Alterado para ListView para acomodar conteúdo que pode ser mais longo do que a tela
           children: <Widget>[
-            SizedBox(height: 80),
-            SizedBox(
-              height: 120, // Define a altura da imagem, ajuste conforme a necessidade
-              child: Image.asset('imagens/logo.png'), // Substitua 'assets/logo.png' pelo caminho do seu logo
-            ),
-            SizedBox(height: 80), // Espaçamento entre o logo e o primeiro campo de texto
+            SizedBox(height: 30),
+            SizedBox(height: topPadding),
+            Image.asset('imagens/logo.png', width: 150, height: 100),
+            SizedBox(height: topPadding),
+            
+            SizedBox(height: 55), // Espaçamento entre o logo e o primeiro campo de texto
             TextFormField(
               controller: _zonaController,
               decoration: InputDecoration(
@@ -124,15 +125,20 @@ Widget build(BuildContext context) {
                 return null;
               },
             ),
-            SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: _verificarEAtualizarEstacionamento,
-              child: Text('Registar Estacionamento'),
-              style: ElevatedButton.styleFrom(
-                  primary: Color.fromRGBO(163, 53, 101, 1),
-                  onPrimary: Colors.white,
+            SizedBox(height: 50.0),
+          Center(
+              child: Container(
+                width: 120, // Defina a largura do botão aqui
+                child: ElevatedButton(
+                  onPressed: _verificarEAtualizarEstacionamento,
+                  child: Text('Guardar'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFF69285F),
+                    onPrimary: Colors.white,
+                  ),
+                ),
               ),
-            ),
+            )
           ],
         ),
       ),

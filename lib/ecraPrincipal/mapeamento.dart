@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastparking/customButton.dart';
-import 'package:fastparking/gestaoEstacionamento.dart';
-import 'package:fastparking/menuPrincipal.dart';
+import 'package:fastparking/ecraPrincipal/menuPrincipal.dart';
+import 'package:fastparking/ecraPrincipal/qrcode.dart';
+import 'package:fastparking/estacionamento/gestaoEstacionamento.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:fastparking/qrcode.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});

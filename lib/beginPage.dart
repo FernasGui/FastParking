@@ -1,4 +1,4 @@
-import 'package:fastparking/loginPage.dart';
+import 'package:fastparking/autenticacao/loginPage.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';

@@ -169,7 +169,7 @@ class _GestaoPagamentoState extends State<GestaoPagamento> {
                   },
                   child: Text('Confirmar'),
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromRGBO(163, 53, 101, 1),
+                    primary: Color(0xFF69285F),
                     onPrimary: Colors.white,
                         ),
                 ),

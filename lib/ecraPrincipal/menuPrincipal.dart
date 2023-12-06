@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fastparking/gestaoMatricula.dart';
-import 'package:fastparking/registarEstacionamento';
+import 'package:fastparking/autenticacao/loginPage.dart';
+import 'package:fastparking/estacionamento/registarEstacionamento.dart';
+import 'package:fastparking/matricula/gestaoMatricula.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fastparking/gestaoPagamento.dart';
-import 'package:fastparking/loginPage.dart';
+
 
 class MenuPrincipal extends StatefulWidget {
   MenuPrincipal({Key? key}) : super(key: key);
@@ -82,7 +84,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
           ),
            _buildDrawerItem(
             icon: Icons.location_on,
-            text: 'Localização',
+            text: 'Registar Estacionamento',
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => RegistarEstacionamento(),
