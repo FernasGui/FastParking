@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastparking/autenticacao/loginPage.dart';
 import 'package:fastparking/estacionamento/registarEstacionamento.dart';
 import 'package:fastparking/matricula/gestaoMatricula.dart';
+import 'package:fastparking/premium/subscricaoPage.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +111,9 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
             icon: Icons.star,
             text: 'Premium',
             onTap: () {
-              // Ação para Premium
+               Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PremiumPage(),
+              ));
             },
           ),
           _buildDrawerItem(

@@ -22,7 +22,17 @@ class _AdicionarMatriculaState extends State<AdicionarMatricula> {
     super.dispose();
   }
 
-  void _adicionarMatricula() async {
+ void _adicionarMatricula() async {
+  // Verificar se os campos estão vazios
+  if (modeloController.text.isEmpty || matriculaController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Preencha todos os campos obrigatórios.'),
+      backgroundColor: Colors.red),
+      
+    );
+    return; // Parar a execução se algum campo estiver vazio
+  }
+  
   final user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     DocumentReference docRef = FirebaseFirestore.instance.collection('Matriculas').doc(user.uid);
@@ -64,7 +74,7 @@ class _AdicionarMatriculaState extends State<AdicionarMatricula> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Adicionar matrícula'),
+        title: Text('Adicionar Matrícula'),
         backgroundColor:  Color.fromRGBO(163, 53, 101, 1), 
         foregroundColor: Color.fromRGBO(255, 255, 255, 1),
        

@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               TextButton(
-                child: Text('Não tem uma conta? Registre-se aqui.', style: TextStyle(color: Color(0xFF69285f)),),
+                child: Text('Não tem uma conta? Registe-se aqui.', style: TextStyle(color: Color(0xFF69285f)),),
                 
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => RegisterPages()));

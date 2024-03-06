@@ -58,7 +58,8 @@ void _registarEstacionamento() {
     _zonaController.clear();
     _lugarController.clear();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Estacionamento registado com sucesso!')),
+      SnackBar(content: Text('Estacionamento registado com sucesso!'),
+       backgroundColor: Colors.green),
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fastparking/customButton.dart';
 
 class GestaoPagamento extends StatefulWidget {
   const GestaoPagamento({Key? key}) : super(key: key);
@@ -156,6 +155,11 @@ class _GestaoPagamentoState extends State<GestaoPagamento> {
 
                         // Fecha a BottomSheet após a atualização bem-sucedida
                         Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Carregamento efetuado com sucesso!'),
+                           backgroundColor: Colors.green,),
+
+                        );
                       } else {
                         // Mostra uma mensagem de erro se o uid estiver vazio
                         ScaffoldMessenger.of(context).showSnackBar(
