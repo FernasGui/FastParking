@@ -1,4 +1,5 @@
 import 'package:fastparking/informacoes/tarifasParques.dart';
+import 'package:fastparking/informacoes/tutorial.dart';
 import 'package:flutter/material.dart';
 
 class InfoPage extends StatelessWidget {
@@ -21,7 +22,9 @@ class InfoPage extends StatelessWidget {
               height: 55.0,
               child: ElevatedButton(
                 onPressed: () {
-                  // Ação do botão Tutorial da app.
+                   Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => TutorialPage(),
+              ));
                 },
                 child: Text(
                   'Tutorial da app',

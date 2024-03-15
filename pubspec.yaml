@@ -17,6 +17,7 @@ dependencies:
   google_maps_flutter: ^2.5.0
   google_place: ^0.4.7
   geolocator: ^10.1.0
+  carousel_slider: ^4.2.1
   
   #firebase_core: ^1.24.0
   firebase_core: ^2.24.0
@@ -54,3 +55,8 @@ flutter:
     - imagens/logo.png
     - imagens/Parking.png
     - imagens/Chat.png
+    - imagens/marcadoresTutorial.jpg
+    - imagens/QRtutorial.jpg
+    - imagens/premiumTutorial.jpg
+    - imagens/menuTutorial.jpg
+    - imagens/lugarTutorial.jpg

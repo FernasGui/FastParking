@@ -1,3 +1,6 @@
+import 'package:fastparking/informacoes/tabelaPrecosP1.dart';
+import 'package:fastparking/informacoes/tabelaPrecosP2.dart';
+import 'package:fastparking/informacoes/tabelaPrecosP3.dart';
 import 'package:flutter/material.dart';
 
 class TarifasParquesPage extends StatelessWidget {
@@ -27,7 +30,9 @@ class TarifasParquesPage extends StatelessWidget {
               height: 55.0,
               child: ElevatedButton(
                 onPressed: () {
-                  // Ação do botão Tutorial da app.
+                      Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PricePage1(),
+              ));
                 },
                 child: Text(
                   'Parque Cidade Universitária',
@@ -46,7 +51,10 @@ class TarifasParquesPage extends StatelessWidget {
               height: 55.0,
               child: ElevatedButton(
                 onPressed: () {
-               
+                   Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PricePage2(),
+              ));
+                  
                 },
                 child: Text(
                   'Parque Campo Grande',
@@ -64,7 +72,9 @@ class TarifasParquesPage extends StatelessWidget {
               height: 55.0,
               child: ElevatedButton(
                 onPressed: () {
-                  // Ação do botão Tutorial da app.
+                   Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PricePage3(),
+              ));
                 },
                 child: Text(
                   'Parque Saba Estádio Univ.',
