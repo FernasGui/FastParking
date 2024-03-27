@@ -1,6 +1,8 @@
 import 'package:fastparking/autenticacao/loginPage.dart';
-import 'package:fastparking/autenticacao/servicoRegisto.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+
+
 
 class RegisterPages extends StatefulWidget {
   @override
@@ -14,7 +16,6 @@ class _RegisterPageState extends State<RegisterPages> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   
-  AutenticacaoServico _autentServ = AutenticacaoServico();
 
   @override
   void dispose() {
@@ -40,29 +41,31 @@ class _RegisterPageState extends State<RegisterPages> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    try {
-      bool registrationSuccessful = await _autentServ.autenticacaoUser(nome: nome, email: email, password: password);
+   final FirebaseFunctions functions = FirebaseFunctions.instance;
 
-      if (registrationSuccessful) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
-      } else {
-        _showErrorDialog('Falha ao registrar. Por favor, tente novamente mais tarde.');
+      try {
+        // Chama a função 'registerUser' do Firebase Cloud Functions
+        final HttpsCallableResult result = await functions
+            .httpsCallable('registerUser')
+            .call({'name': nome, 'email': email, 'password': password});
+
+        if (result.data['status'] == 'success') {
+          // Se o usuário foi registrado com sucesso, redireciona para a página de login
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+        } else {
+          _showErrorDialog('Falha ao registrar. Por favor, tente novamente mais tarde.');
+        }
+      } on FirebaseFunctionsException catch (e) {
+        _showErrorDialog('Erro no registro: ${e.message}');
       }
-    } catch (e) {
-      // Log de erro para depuração
-      print('Erro no registro: $e');
-      _showErrorDialog('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.');
     }
-  } else {
-    print('Falha na validação. Por favor, corrija os erros antes de continuar.');
   }
-}
 
 void _showErrorDialog(String message) {
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text('Erro de Registro'),
+      title: Text('Erro de Registo'),
       content: Text(message),
       actions: <Widget>[
         TextButton(

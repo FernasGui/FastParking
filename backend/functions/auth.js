@@ -1,6 +1,9 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-admin.initializeApp();
+
+if (admin.apps.length === 0) {
+  admin.initializeApp();
+}
 
 exports.registerUser = functions.https.onCall(async (data, context) => {
   // Validação dos dados de entrada
@@ -18,7 +21,7 @@ exports.registerUser = functions.https.onCall(async (data, context) => {
     });
 
     // Salva informações adicionais no Firestore
-    const userRef = admin.firestore().collection("users").doc(userRecord.uid);
+    const userRef = admin.firestore().collection("Users").doc(userRecord.uid);
     await userRef.set({
       name,
       email,
@@ -30,7 +33,7 @@ exports.registerUser = functions.https.onCall(async (data, context) => {
     return {status: "success", userId: userRecord.uid};
   } catch (error) {
     // Log do erro no Firebase console
-    console.error("Erro ao registrar usuário:", error);
+    console.error("Erro ao registar usuário:", error);
 
     // Lança um erro mais genérico se for um erro de banco de dados ou de rede
     if (error.code.startsWith("auth/")) {

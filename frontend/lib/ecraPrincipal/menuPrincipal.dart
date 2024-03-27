@@ -39,7 +39,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
       // Atualiza a UI com o nome e o email do usuário
       setState(() {
-        _userName = userData?['nome'] ?? 'Usuário Anônimo'; // Substitua 'name' pela chave real usada para o nome na Firestore
+        _userName = userData?['nome'] ?? 'Utilizador Anônimo'; // Substitua 'name' pela chave real usada para o nome na Firestore
         _userEmail = user.email ?? 'No Email';
       });
     }

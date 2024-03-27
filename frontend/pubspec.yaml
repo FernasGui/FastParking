@@ -32,6 +32,7 @@ dependencies:
   #firebase_messaging: ^13.0.4 # will satisfy your firebase core things that depend on ^4.5.1
   firebase_messaging: ^14.7.6
   intl: ^0.19.0
+  cloud_functions: ^4.6.8
 dev_dependencies:
 
 flutter_test:
