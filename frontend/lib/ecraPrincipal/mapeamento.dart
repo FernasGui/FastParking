@@ -130,11 +130,6 @@ void removePredefinedMarkers() {
     );
   }
 
-  Stream<DocumentSnapshot> getUserSaldoStream() {
-  User? user = FirebaseAuth.instance.currentUser;
-  return FirebaseFirestore.instance.collection('Users').doc(user?.uid).snapshots();
-}
-
 
   void _determinePosition() async {
     bool serviceEnabled;
@@ -259,30 +254,32 @@ final dadosQRCode = {
         children: <Widget>[
     Column(
       children: [
-        StreamBuilder<DocumentSnapshot>(
-          stream: userSaldoStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
-              Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-               saldo = data['saldo'] ?? 0.0;
-              return Container(
-                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                margin: EdgeInsets.only(bottom: 8), // Distância do visor para o mapa
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                  boxShadow: [BoxShadow(blurRadius: 2, color: Colors.grey)],
-                ),
-                child: Text(
-                  'Saldo: ${saldo.toStringAsFixed(2)}€',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              );
-            } else {
-              return SizedBox.shrink();
-            }
-          },
+      StreamBuilder<DocumentSnapshot>(
+  stream: userSaldoStream,
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
+      Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+      // Usa 'as num' para garantir que qualquer valor numérico possa ser convertido para double
+      saldo = (data['saldo'] as num?)?.toDouble() ?? 0.0;
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        margin: EdgeInsets.only(bottom: 8), // Distância do visor para o mapa
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [BoxShadow(blurRadius: 2, color: Colors.grey)],
         ),
+        child: Text(
+          'Saldo: ${saldo.toStringAsFixed(2)}€',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  },
+),
+
         Expanded(
           child: GoogleMap(
             onMapCreated: onMapCreated,

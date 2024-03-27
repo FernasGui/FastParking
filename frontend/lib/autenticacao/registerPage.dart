@@ -25,20 +25,12 @@ class _RegisterPageState extends State<RegisterPages> {
     super.dispose();
   }
 
-  bool _isValidEmail(String email) {
-    Pattern pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-    RegExp regex = RegExp(pattern as String);
-    return regex.hasMatch(email);
-  }
 
-  bool _isValidPassword(String password) {
-    return password.length >= 6 && password.contains(RegExp(r'[0-9]')) && password.contains(RegExp(r'[A-Za-z]'));
-  }
 
   void _register() async {
   if (_formKey.currentState!.validate()) {
-    String nome = _nameController.text;
-    String email = _emailController.text;
+    String nome = _nameController.text.trim();
+    String email = _emailController.text.trim();
     String password = _passwordController.text;
 
    final FirebaseFunctions functions = FirebaseFunctions.instance;
@@ -47,16 +39,16 @@ class _RegisterPageState extends State<RegisterPages> {
         // Chama a função 'registerUser' do Firebase Cloud Functions
         final HttpsCallableResult result = await functions
             .httpsCallable('registerUser')
-            .call({'name': nome, 'email': email, 'password': password});
+            .call({'nome': nome, 'email': email, 'password': password});
 
         if (result.data['status'] == 'success') {
           // Se o usuário foi registrado com sucesso, redireciona para a página de login
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
         } else {
-          _showErrorDialog('Falha ao registrar. Por favor, tente novamente mais tarde.');
+          _showErrorDialog('Falha ao registar. Por favor, tente novamente mais tarde.');
         }
       } on FirebaseFunctionsException catch (e) {
-        _showErrorDialog('Erro no registro: ${e.message}');
+        _showErrorDialog('Erro no registo: ${e.message}');
       }
     }
   }
@@ -118,7 +110,7 @@ TextFormField(
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(90.0)),
   ),
   validator: (value) {
-    if (value == null || !_isValidEmail(value)) {
+    if (value == null ) {
       return 'Por favor, insira um e-mail válido.';
     }
     return null;
@@ -133,7 +125,7 @@ TextFormField(
   ),
   obscureText: true,
   validator: (value) {
-    if (value == null || !_isValidPassword(value)) {
+    if (value == null ) {
       return 'A senha não cumpre os requisitos. Deve ter pelo menos 6 caracteres, incluindo números e letras.';
     }
     return null;
