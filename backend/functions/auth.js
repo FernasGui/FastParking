@@ -1,14 +1,15 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
+
 if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
 exports.registerUser = functions.https.onCall(async (data, context) => {
   // Validação dos dados de entrada
-  const {name, email, password} = data;
-  if (!email || !password || !name) {
+  const {nome, email, password} = data;
+  if (!email || !password || !nome) {
     throw new functions.https.HttpsError("invalid-argument", "Os campos de nome, e-mail e senha são obrigatórios.");
   }
 
@@ -17,16 +18,17 @@ exports.registerUser = functions.https.onCall(async (data, context) => {
     const userRecord = await admin.auth().createUser({
       email,
       password,
-      displayName: name,
+      displayName: nome,
     });
 
     // Salva informações adicionais no Firestore
     const userRef = admin.firestore().collection("Users").doc(userRecord.uid);
     await userRef.set({
-      name,
+      nome,
       email,
       saldo: 0, // Inicia o saldo como 0 ou outro valor padrão
       matriculas: [], // Inicia como uma lista vazia ou outro valor padrão
+      premium: false,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 

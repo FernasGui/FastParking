@@ -1,16 +1,25 @@
-// index.js
-
 // const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const serviceAccount = require("./serviceAccount.json");
 
-if (admin.apps.length === 0) {
-  admin.initializeApp();
+/**
+ * Inicializa o Firebase Admin SDK se ainda não estiver inicializado.
+ */
+function setupAdminSDK() {
+  if (admin.apps.length === 0) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  }
 }
 
 // Importar a função de registro de auth.js.
 const {registerUser} = require("./auth");
+const {loginUser} = require("./log");
 
-// Exportar a função registerUser para que ela possa ser chamada como uma Cloud Function.
+// Exportar a função setupAdminSDK juntamente com as outras funções
+exports.setupAdminSDK = setupAdminSDK;
 exports.registerUser = registerUser;
+exports.loginUser = loginUser;
 
-// ...aqui você pode adicionar mais funções a serem exportadas se necessário.
+// Agora, você pode chamar setupAdminSDK em qualquer lugar que importe este arquivo

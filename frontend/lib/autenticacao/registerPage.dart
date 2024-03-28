@@ -1,4 +1,5 @@
 import 'package:fastparking/autenticacao/loginPage.dart';
+import 'package:fastparking/errorDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -25,8 +26,6 @@ class _RegisterPageState extends State<RegisterPages> {
     super.dispose();
   }
 
-
-
   void _register() async {
   if (_formKey.currentState!.validate()) {
     String nome = _nameController.text.trim();
@@ -45,31 +44,24 @@ class _RegisterPageState extends State<RegisterPages> {
           // Se o usuário foi registrado com sucesso, redireciona para a página de login
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
         } else {
-          _showErrorDialog('Falha ao registar. Por favor, tente novamente mais tarde.');
+          ErrorDialog.showErrorDialog(
+            context,
+            'Erro de Registo',
+            'Falha ao registar. Por favor, tente novamente mais tarde.'
+          );   
         }
       } on FirebaseFunctionsException catch (e) {
-        _showErrorDialog('Erro no registo: ${e.message}');
-      }
-    }
-  }
-
-void _showErrorDialog(String message) {
-  showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text('Erro de Registo'),
-      content: Text(message),
-      actions: <Widget>[
-        TextButton(
-          child: Text('Ok'),
-          onPressed: () {
-            Navigator.of(ctx).pop();
-          },
-        ),
-      ],
-    ),
+  // Garante que a mensagem de erro não é nula antes de usá-la.
+  final errorMessage = e.message ?? 'Ocorreu um erro desconhecido.';
+  ErrorDialog.showErrorDialog(
+     context,
+     'Erro de Registro',
+     errorMessage,
   );
 }
+
+    }
+  }
 
 
   @override

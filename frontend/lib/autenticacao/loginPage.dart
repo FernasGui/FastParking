@@ -1,7 +1,10 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fastparking/autenticacao/registerPage.dart';
 import 'package:fastparking/ecraPrincipal/mapeamento.dart';
+import 'package:fastparking/errorDialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis_auth/auth_io.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,50 +15,45 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void _loginButtonPressed() async {
-    String email = emailController.text;
-    String password = passwordController.text;
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
     try {
-      // Tenta fazer o login com o e-mail e senha
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      print('Login bem-sucedido: ${userCredential.user}');
-
-      // Navegue para a próxima tela se o login for bem-sucedido
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => MapScreen()),
+      // Tenta fazer login com e-mail e senha usando o Firebase Authentication.
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
       );
+
+      // Navegue para a próxima tela após o login ser bem-sucedido.
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MapScreen()));
+
     } on FirebaseAuthException catch (e) {
-      // Trata erros de autenticação
-      String errorMessage = 'Ocorreu um erro ao fazer login. Por favor, tente novamente.';
+      // Trata falhas de login com Firebase Auth Exception
+      String errorMessage = 'Ocorreu um erro desconhecido.';
       if (e.code == 'user-not-found') {
         errorMessage = 'Nenhum usuário encontrado para esse e-mail.';
       } else if (e.code == 'wrong-password') {
         errorMessage = 'Senha incorreta fornecida para esse usuário.';
-      }
+      } // Adicione mais condições conforme necessário.
 
-      // Mostra um diálogo de erro
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Erro de Login"),
-            content: Text(errorMessage),
-            actions: [
-              TextButton(
-                child: Text("Fechar"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
+      ErrorDialog.showErrorDialog(
+        context,
+        'Erro de Login',
+        errorMessage,
+      );
+    } catch (e) {
+      // Trata outros erros que possam ocorrer
+      ErrorDialog.showErrorDialog(
+        context,
+        'Erro de Login',
+        'Não foi possível fazer login. Por favor, tente novamente mais tarde.',
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
