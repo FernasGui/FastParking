@@ -4,7 +4,6 @@ import 'package:fastparking/ecraPrincipal/mapeamento.dart';
 import 'package:fastparking/errorDialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:googleapis_auth/auth_io.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,43 +15,37 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _loginButtonPressed() async {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
+   void _loginButtonPressed() async {
+  String email = emailController.text.trim();
+  String password = passwordController.text.trim();
 
-    try {
-      // Tenta fazer login com e-mail e senha usando o Firebase Authentication.
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+  try {
+    // Tenta fazer login com e-mail e senha usando o Firebase Authentication.
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
-      // Navegue para a próxima tela após o login ser bem-sucedido.
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MapScreen()));
+    // Navegue para a próxima tela após o login ser bem-sucedido.
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MapScreen()));
 
-    } on FirebaseAuthException catch (e) {
-      // Trata falhas de login com Firebase Auth Exception
-      String errorMessage = 'Ocorreu um erro desconhecido.';
-      if (e.code == 'user-not-found') {
-        errorMessage = 'Nenhum usuário encontrado para esse e-mail.';
-      } else if (e.code == 'wrong-password') {
-        errorMessage = 'Senha incorreta fornecida para esse usuário.';
-      } // Adicione mais condições conforme necessário.
-
-      ErrorDialog.showErrorDialog(
-        context,
-        'Erro de Login',
-        errorMessage,
-      );
-    } catch (e) {
-      // Trata outros erros que possam ocorrer
-      ErrorDialog.showErrorDialog(
-        context,
-        'Erro de Login',
-        'Não foi possível fazer login. Por favor, tente novamente mais tarde.',
-      );
+  } on FirebaseAuthException catch (e) {
+    // Trata falhas de login com Firebase Auth Exception
+    String errorMessage = 'Ocorreu um erro desconhecido.';
+    if (e.code == 'user-not-found') {
+      errorMessage = 'Nenhum usuário encontrado para esse e-mail.';
+    } else if (e.code == 'wrong-password') {
+      errorMessage = 'Senha incorreta fornecida para esse usuário.';
     }
+
+    ErrorDialog.showErrorDialog(
+      context,
+      'Erro de Login',
+      errorMessage,
+    );
   }
+}
+
 
 
   @override

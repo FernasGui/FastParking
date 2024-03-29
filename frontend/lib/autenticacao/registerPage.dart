@@ -55,7 +55,7 @@ class _RegisterPageState extends State<RegisterPages> {
   final errorMessage = e.message ?? 'Ocorreu um erro desconhecido.';
   ErrorDialog.showErrorDialog(
      context,
-     'Erro de Registro',
+     'Erro de Registo',
      errorMessage,
   );
 }
