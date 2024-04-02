@@ -1,0 +1,1 @@
+ C:\\Users\\User\\FastParking\\frontend\\.dart_tool\\flutter_build\\61ecbeba44ea6aeb7c40988432adacda\\native_assets.yaml: 
