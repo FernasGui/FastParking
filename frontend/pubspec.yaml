@@ -1,0 +1,63 @@
+
+name: fastparking
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  qr_flutter: ^4.1.0
+  cupertino_icons: ^1.0.2
+  google_maps_flutter: ^2.5.0
+  google_place: ^0.4.7
+  geolocator: ^10.1.0
+  carousel_slider: ^4.2.1
+  
+  #firebase_core: ^1.24.0
+  firebase_core: ^2.24.0
+  #firebase_auth: ^3.3.3
+  firebase_auth: ^4.15.0
+  #cloud_firestore: ^3.1.5
+  cloud_firestore: ^4.13.3
+  #firebase_storage: ^10.2.4
+  firebase_storage: ^11.5.3
+  #firebase_core_platform_interface: ^4.5.1
+  firebase_core_platform_interface: ^5.0.0
+  #firebase_messaging: ^13.0.4 # will satisfy your firebase core things that depend on ^4.5.1
+  firebase_messaging: ^14.7.6
+  intl: ^0.19.0
+  cloud_functions: ^4.6.8
+dev_dependencies:
+
+flutter_test:
+    sdk: flutter
+flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - imagens/begin.png
+    - imagens/carro.png
+    - imagens/mensagem.png
+    - imagens/qrcode.png
+    - imagens/Parque.png
+    - imagens/informação.png
+    - imagens/Qrcode_grande.png
+    - imagens/mbway.png
+    - imagens/Paypal.png
+    - imagens/Visa-Mastercard.png
+    - imagens/logo.png
+    - imagens/Parking.png
+    - imagens/Chat.png
+    - imagens/marcadoresTutorial.jpg
+    - imagens/QRtutorial.jpg
+    - imagens/premiumTutorial.jpg
+    - imagens/menuTutorial.jpg
+    - imagens/lugarTutorial.jpg
