@@ -1,3 +1,4 @@
+import 'package:fastparking/premium/pagamentoSubscricao.dart';
 import 'package:flutter/material.dart';
 
 class PremiumPage extends StatelessWidget {
@@ -5,8 +6,8 @@ class PremiumPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Torna-te Premium'),
-        backgroundColor: Color(0xFF69285f),
+        title: Text('Faz-te Premium'),
+        backgroundColor: Color.fromRGBO(163, 53, 101, 1),
         foregroundColor: Colors.white, // Cor do texto do AppBar
       ),
       body: SingleChildScrollView(
@@ -42,19 +43,21 @@ class PremiumPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 32.0),
               child: 
               
-              ElevatedButton(
-                onPressed: () {
-                  // Adicione a lógica para iniciar o processo de assinatura
-                },
-                child: Text('Subscrever'), 
-                
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF69285f), // Cor do botão
-                  onPrimary: Colors.white, // Cor do texto
-                  padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0), // Padding
-                  textStyle: TextStyle(fontSize: 18), // Tamanho do texto
-                ),
-              ),
+      ElevatedButton(
+  onPressed: () {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => PagamentoPremium()),
+    );
+  },
+  child: Text('Subscrever'),
+  style: ElevatedButton.styleFrom(
+    primary: Color.fromRGBO(163, 53, 101, 1), // Cor do botão
+    onPrimary: Colors.white, // Cor do texto
+    padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0), // Padding
+    textStyle: TextStyle(fontSize: 18), // Tamanho do texto
+  ),
+),
+
             ),
           ],
         ),
