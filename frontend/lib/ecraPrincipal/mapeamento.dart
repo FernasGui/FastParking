@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fastparking/dialogoUtil.dart';
 import 'package:fastparking/ecraPrincipal/customButton.dart';
 import 'package:fastparking/ecraPrincipal/menuPrincipal.dart';
+import 'package:fastparking/ecraPrincipal/qrCode.dart';
 import 'package:fastparking/estacionamento/gestaoEstacionamento.dart';
 import 'package:fastparking/informacoes/info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -23,6 +20,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+
   GoogleMapController? _mapController;
   GooglePlace? googlePlace;
   List<Marker> markers = [];
@@ -31,31 +29,21 @@ class _MapScreenState extends State<MapScreen> {
   int _selectedIndex = 0;
   double saldo = 0.0;
   bool markersEnabled = false;
-  bool _showQrCode = false; // Adicionado para controlar a visibilidade do QR Code
 
    final List<Map<String, dynamic>> veiculos = [];
   StreamSubscription<DocumentSnapshot>? matriculasSubscription;
 
+
+
+
 //Barra inferior
   void _onItemTapped(int index) {
-    if (index == 2) {
-      if (saldo > 0.0) {
-        setState(() {
-          _showQrCode = !_showQrCode;
-        });
-    } else {
-      // Aqui chamamos a função exibirJanelaInformativa
-      DialogoUtil.exibirJanelaInformativa(
-        context, 'Saldo Insuficiente',
-        ' Confirma que tens saldo positivo antes de entrar no parque.',
-      );
-    }
-  }  else {
-      setState(() {
-        _selectedIndex = index;
-        _showQrCode = false; // Esconder o QR Code se outro índice for selecionado.
-      });
-    }
+  if (index == 2) {
+    // Crie uma instância de QRCodeManager
+    QRCodeManager qrCodeManager = QRCodeManager();
+    qrCodeManager.showMatriculasDialog(context);
+  }
+
 
     if (index == 3) { // Se o índice for 3
       if (!markersEnabled) { // Se os marcadores não estão habilitados
@@ -84,7 +72,7 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     googlePlace = GooglePlace("AIzaSyAlTFic1JbjdtOJj1_oz-igg8DwqFQXeX4");
     _determinePosition();
-    _iniciarListenerMatriculas();
+    
   }
 
    void _addMarkerAtPosition(LatLng position, String markerId, String title, String snippet) {
@@ -190,24 +178,6 @@ void removePredefinedMarkers() {
       return Center(child: Text('Usuário não está logado.'));
     }
 
-    // Aqui você pode adicionar mais dados se necessário
-    final agora = DateTime.now();
-
-// Formata a data no formato 'yyyy-MM-dd'.
-final data = DateFormat('yyyy-MM-dd').format(agora);
-
-// Formata a hora no formato 'HH:mm'.
-final hora = DateFormat('HH:mm').format(agora);
-
-final dadosQRCode = {
-  'userId': user.uid,
-  'Data': data,
-  'Hora': hora,
-  
-};
-
-    final String dadosCodificados = jsonEncode(dadosQRCode);
-
    return Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
@@ -295,11 +265,6 @@ final dadosQRCode = {
         ),
       ],
     ),
-         if (_showQrCode ) ...[
-          
-           _buildOverlay(),
-            _buildQrCode(dadosCodificados),
-         ], // O QR Code só será mostrado quando _showQrCode for true
             
         ],
       ),
@@ -375,97 +340,5 @@ final dadosQRCode = {
     );
   }
 
-  void _iniciarListenerMatriculas() {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      matriculasSubscription = FirebaseFirestore.instance
-          .collection('Matriculas')
-          .doc(user.uid)
-          .snapshots()
-          .listen((docSnapshot) {
-        if (docSnapshot.exists) {
-          Map<String, dynamic> data = docSnapshot.data()!;
-          if (data['veiculos'] != null) {
-            setState(() {
-              veiculos.clear();
-              veiculos.addAll(List<Map<String, dynamic>>.from(data['veiculos']));
-            });
-          }
-        }
-      });
-    }
-  }
-
-void _mostrarSelecaoMatricula() {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext bc) {
-      return Container(
-        child: Wrap(
-          children: veiculos.map((veiculo) {
-            return ListTile(
-              title: Text(veiculo['matricula']), // Assumindo que cada veículo tem uma chave 'matricula'
-              onTap: () {
-                // Atualiza a matrícula selecionada para o QR Code
-                _atualizarDadosQrCode(veiculo['matricula']);
-                Navigator.of(context).pop(); // Fecha o modal após a seleção
-              },
-            );
-          }).toList(),
-        ),
-      );
-    },
-  );
-}
-
-void _atualizarDadosQrCode(String matriculaSelecionada) {
-  setState(() {
-    // Atualizar os dados do QR Code aqui
-    final dadosQRCode = {
-      'userId': FirebaseAuth.instance.currentUser?.uid,
-      'Data': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      'Hora': DateFormat('HH:mm').format(DateTime.now()),
-      'Matricula': matriculaSelecionada,
-    };
-
-    // Codifica os novos dados em uma string JSON
-    final String dadosCodificados = jsonEncode(dadosQRCode);
-
-  });
-}
-
-
-//QR Code
-   Widget _buildOverlay() {
-    // Constrói o fundo escuro quando o QR Code é exibido.
-    return Container(
-      color: Colors.black.withOpacity(0.5),
-    );
-  }
-
-  Widget _buildQrCode(String dadosCodificados) {
-    // Constrói o widget do QR Code.
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.70,
-        height: MediaQuery.of(context).size.height * 0.35,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 20.0,
-              spreadRadius: 15.0,
-            ),
-          ],
-        ),
-        child: QrImageView(
-          data: dadosCodificados,
-          version: QrVersions.auto,
-          size: 150.0,
-        ),
-      ),
-    );
-  }
+  
 }

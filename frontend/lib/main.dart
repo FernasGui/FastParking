@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'beginPage.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future <void> main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,35 +22,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      navigatorKey: navigatorKey,
       home: SplashScreen(), // Define SplashScreen como a tela inicial
       // Aqui você pode definir mais configurações do MaterialApp
-    );
-  }
-}
-
-
-class HomeScreenStateful extends StatefulWidget {
-  const HomeScreenStateful({super.key});
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreenStateful> {
-  // Adicione variáveis e métodos para gerenciar o estado aqui
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('FastParking'),
-      ),
-      body: Center(
-        child: Text(
-          'Bem-vindo ao FastParking',
-          style: Theme.of(context).textTheme.headline4,
-        ),
-      ),
     );
   }
 }

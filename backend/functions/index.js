@@ -9,8 +9,10 @@ if (admin.apps.length === 0) {
 
 // Importar a função de registro de auth.js.
 const {registerUser} = require("./auth");
-
-// Exportar a função registerUser para que ela possa ser chamada como uma Cloud Function.
-exports.registerUser = registerUser;
+const {checkSaldoAndGenerateQR} = require("./qrCode");
 
 // ...aqui você pode adicionar mais funções a serem exportadas se necessário.
+exports.registerUser = registerUser;
+exports.checkSaldoAndGenerateQR = checkSaldoAndGenerateQR;
+
+

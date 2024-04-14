@@ -1,3 +1,4 @@
+import 'package:fastparking/formatMatricula.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,10 +49,10 @@ class _EditarMatriculaState extends State<EditarMatricula> {
 
         // Atualiza o veículo no índice fornecido
         veiculos[widget.veiculoIndex] = {
-          'Descrição': _descricaoController.text,
-          'Matricula': _matriculaController.text,
-          'Matricula Portuguesa': _matriculaPortuguesa,
-          'Carro Eletrico': _carroEletrico,
+          'descrição': _descricaoController.text,
+          'matricula': _matriculaController.text,
+          'matriculaPortuguesa': _matriculaPortuguesa,
+          'eletrico': _carroEletrico,
         };
 
         transaction.update(docRef, {'veiculos': veiculos});
@@ -120,11 +121,15 @@ class _EditarMatriculaState extends State<EditarMatricula> {
               controller: _matriculaController,
               decoration: InputDecoration(
                 labelText: 'Matrícula do veículo',
-                hintText: 'Exemplo: 00-AB-00',
+                hintText: 'Exemplo: 00AB12',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.0),
                 ),
               ),
+               keyboardType: TextInputType.text,
+            inputFormatters: [
+              MatriculaInputFormatter(), // Usa o formatter personalizado
+            ],
             ),
             
             SizedBox(height: 16),

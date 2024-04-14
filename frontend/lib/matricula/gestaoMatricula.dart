@@ -84,8 +84,8 @@ class _GestaoMatriculaState extends State<GestaoMatricula> {
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: const Icon(Icons.directions_car),
-                  title: Text(veiculos[index]['Matricula'] ?? 'Sem matrícula'),
-                  subtitle: Text(veiculos[index]['Descrição'] ?? 'Sem descrição'),
+                  title: Text(veiculos[index]['matricula'] ?? 'Sem matrícula'),
+                  subtitle: Text(veiculos[index]['descrição'] ?? 'Sem descrição'),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
                    Navigator.of(context).push(
