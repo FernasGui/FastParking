@@ -22,10 +22,10 @@ class _EditarMatriculaState extends State<EditarMatricula> {
   @override
   void initState() {
     super.initState();
-    _matriculaController.text = widget.veiculo['Matricula'] ?? '';
-    _descricaoController.text = widget.veiculo['Descrição'] ?? '';
-    _matriculaPortuguesa = widget.veiculo['Matricula Portuguesa'] ?? false;
-    _carroEletrico = widget.veiculo['Carro Eletrico'] ?? false;
+    _matriculaController.text = widget.veiculo['matricula'] ?? '';
+    _descricaoController.text = widget.veiculo['descrição'] ?? '';
+    _matriculaPortuguesa = widget.veiculo['matriculaPortuguesa'] ?? false;
+    _carroEletrico = widget.veiculo['eletrico'] ?? false;
   }
 
   @override
