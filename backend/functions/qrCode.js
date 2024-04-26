@@ -11,7 +11,9 @@ if (admin.apps.length === 0) {
   }
 
   const uid = context.auth.uid;
-  const matricula = data.matricula; // Acessa a matrícula passada pelo cliente
+  const matricula = data.matricula;
+  const parqueID = data.parqueID;
+   // Acessa a matrícula passada pelo cliente
 
   const doc = await admin.firestore().doc(`Users/${uid}`).get();
     const userData = doc.data();
@@ -21,7 +23,8 @@ if (admin.apps.length === 0) {
             "uid": uid,
             "data": new Date().toISOString().slice(0, 10), // Data atual no formato YYYY-MM-DD
             "hora": new Date().toISOString().slice(11, 19),
-            "matricula": matricula, // Inclui a matrícula nos dados do QR Code
+            "matricula": matricula,
+            "parqueID": parqueID, // Inclui a matrícula nos dados do QR Code
         };
         return {qrData};
     } else {

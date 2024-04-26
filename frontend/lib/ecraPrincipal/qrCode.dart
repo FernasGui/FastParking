@@ -66,6 +66,7 @@ void showMatriculasDialog(BuildContext context) {
 }
 
 // Chama a Cloud Function para gerar o QR Code
+
 void showQRCodeDialog(String qrData) {
   if (navigatorKey.currentState?.mounted ?? false) {
     showDialog(
@@ -93,7 +94,7 @@ void showQRCodeDialog(String qrData) {
                   version: QrVersions.auto,
                   size: 220.0,
                 ),
-                // Espaço extra após o QrImage
+                
                
               ],
             ),
@@ -106,9 +107,9 @@ void showQRCodeDialog(String qrData) {
 
 
 
- // Importe para usar jsonEncode
-
+/*
 void generateQRCode(BuildContext context, String matricula) async {
+ 
   try {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('checkSaldoAndGenerateQR');
     final result = await callable.call({'matricula': matricula});
@@ -133,6 +134,58 @@ void generateQRCode(BuildContext context, String matricula) async {
     }
   }
 }
+*/
 
+void generateQRCode(BuildContext context, String matricula) async {
+   //const parqueID = "P1";
+  const parqueID = "P2";
+  //const parqueID = "P3";
+  try {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('checkSaldoAndGenerateQR');
+    final result = await callable.call({'matricula': matricula, 'parqueID': parqueID});
+    
 
+    if (result.data is Map) {
+      var qrDataMap = result.data['qrData'];
+      if (qrDataMap is Map) {
+      var qrDataString = jsonEncode(qrDataMap); // Encode somente a parte qrData
+        showQRCodeDialog(qrDataString);
+        _registarEntradaEstacionamento(context ,qrDataMap);
+      }
+    } else {
+      print('O resultado recebido não está no formato esperado.');
+    }
+  } on FirebaseFunctionsException catch (e) {
+    // Tratar erros, como saldo insuficiente ou outros erros
+    DialogoUtil.exibirJanelaInformativa(
+      navigatorKey.currentState!.overlay!.context,
+      'Erro ao gerar QR Code',
+      '${e.message}',
+    );
+  }
+}
+
+ Future<void> _registarEntradaEstacionamento(BuildContext context, Map qrDataMap) async {
+    try {
+      HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('registarEntradaEstacionamento');
+    
+     final result = await callable.call({'uid': qrDataMap['uid'], 'matricula': qrDataMap['matricula'], 'parqueID': qrDataMap['parqueID'],
+      });
+       print('Resultado da Cloud Function: ${result.data}');
+    
+    // Exibir diálogo de sucesso ou atualizar a interface com a resposta
+    DialogoUtil.exibirJanelaInformativa(
+      navigatorKey.currentState!.overlay!.context,
+      'Sucesso',
+      'Entrada registrada com sucesso.',
+    );
+  } on FirebaseFunctionsException catch (e) {
+    
+    DialogoUtil.exibirJanelaInformativa(
+      navigatorKey.currentState!.overlay!.context,
+      'Atenção',
+      '${e.message}',
+    );
+  }
+} 
 }

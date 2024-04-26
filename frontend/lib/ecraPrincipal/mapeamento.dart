@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fastparking/dialogoUtil.dart';
 import 'package:fastparking/ecraPrincipal/customButton.dart';
 import 'package:fastparking/ecraPrincipal/menuPrincipal.dart';
 import 'package:fastparking/ecraPrincipal/qrCode.dart';
@@ -39,10 +40,40 @@ class _MapScreenState extends State<MapScreen> {
 //Barra inferior
   void _onItemTapped(int index) {
   if (index == 2) {
-    // Crie uma instância de QRCodeManager
-    QRCodeManager qrCodeManager = QRCodeManager();
-    qrCodeManager.showMatriculasDialog(context);
+    String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+  if (userId != null) {
+    FirebaseFirestore.instance
+      .collection('EstacionamentoAtivo')
+      .where('UID', isEqualTo: userId)
+      .limit(1) // Limita a busca ao primeiro resultado encontrado
+      .get()
+      .then((querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) { // Verifica se há documentos
+          // Se houver um documento, mostre um diálogo correspondente
+          DialogoUtil.exibirJanelaInformativa(
+            context,
+            'Estacionamento Ativo',
+            'Já tens um estacionamento ativo.',
+          );
+        } else {
+          // Se não houver documentos, prossiga com a lógica do else
+          QRCodeManager qrCodeManager = QRCodeManager();
+          qrCodeManager.showMatriculasDialog(context);
+        }
+      })
+      .catchError((error) {
+        // Trate o erro conforme necessário
+      });
+  } else {
+      DialogoUtil.exibirJanelaInformativa(
+            context,
+            'Erro',
+            'Faz login para utilizares a aplicação',
+          );
   }
+}
+
 
 
     if (index == 3) { // Se o índice for 3
@@ -70,7 +101,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    googlePlace = GooglePlace("AIzaSyAlTFic1JbjdtOJj1_oz-igg8DwqFQXeX4");
+   
     _determinePosition();
     
   }
@@ -277,6 +308,8 @@ void removePredefinedMarkers() {
            _moveCameraToUserLocation();
         },
       ),
+
+   
       
       floatingActionButtonLocation: const FloatingActionButtonCustom(
         FloatingActionButtonLocation.endFloat, 

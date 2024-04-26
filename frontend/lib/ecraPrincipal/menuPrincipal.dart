@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastparking/autenticacao/loginPage.dart';
 import 'package:fastparking/estacionamento/registarEstacionamento.dart';
+import 'package:fastparking/historico/historico.dart';
 import 'package:fastparking/matricula/gestaoMatricula.dart';
 import 'package:fastparking/premium/subscricaoPage.dart';
 
@@ -96,7 +97,9 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
             icon: Icons.history,
             text: 'Histórico',
             onTap: () {
-              // Ação para Histórico
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => HistoricoPage(),
+              ));
             },
           ),
           _buildDrawerItem(

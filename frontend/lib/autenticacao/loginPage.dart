@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Navegue para a próxima tela se o login for bem-sucedido
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => MapScreen()),
+        MaterialPageRoute(builder: (context) => const MapScreen()),
       );
     } on FirebaseAuthException catch (e) {
       // Trata erros de autenticação

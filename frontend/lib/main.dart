@@ -2,14 +2,18 @@ import 'package:fastparking/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'beginPage.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-Future <void> main() async {
-  
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, );
-    runApp(const MyApp());
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // Se estiver usando o App Check, ative-o aqui.
+await FirebaseAppCheck.instance.activate();
+  
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

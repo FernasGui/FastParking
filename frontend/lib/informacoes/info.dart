@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fastparking/dialogoUtil.dart';
 import 'package:fastparking/informacoes/tarifasParques.dart';
 import 'package:fastparking/informacoes/tutorial.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class InfoPage extends StatelessWidget {
@@ -63,10 +67,38 @@ class InfoPage extends StatelessWidget {
               height: 55.0,
               child: ElevatedButton(
                 onPressed: () {
-                  // Ação do botão Tutorial da app.
+            String? userId = FirebaseAuth.instance.currentUser?.uid;
+                   if (userId != null) {
+                      FirebaseFirestore.instance
+                        .collection('EstacionamentoAtivo')
+                        .where('UID', isEqualTo: userId)
+                        .limit(1) // Limita a busca ao primeiro resultado encontrado
+                        .get()
+                        .then((querySnapshot) {
+                          if (querySnapshot.docs.isNotEmpty) { 
+                           simularSaida();
+                          } else {
+                           DialogoUtil.exibirJanelaInformativa(
+                              context,
+                              'Atenção',
+                              'Não tens nenhum estacionamento ativo',
+                            );
+                          }
+                        })
+                        .catchError((error) {
+                          // Trate o erro conforme necessário
+                        });
+                    } else {
+                        DialogoUtil.exibirJanelaInformativa(
+                              context,
+                              'Erro',
+                              'Faz login para utilizares a aplicação',
+                            );
+                  }
+                  
                 },
                 child: Text(
-                  'Info',
+                  'Simular Saída',
                   style: TextStyle(color: Colors.white),
                   textScaleFactor: 1.5 , // Cor do texto.
                 ),
@@ -79,5 +111,20 @@ class InfoPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+    Future<void> simularSaida() async {
+
+    
+    User? user = FirebaseAuth.instance.currentUser;
+    
+    try {
+      HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('registarSaidaEstacionamento');
+      final result = await callable.call({'uid': user?.uid});
+     
+      print('Resposta da função: ${result.data}');
+    } on FirebaseFunctionsException catch (e) {
+      print('Erro ao chamar a função: ${e.code} - ${e.message}');
+    }
   }
 }
