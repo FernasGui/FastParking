@@ -26,7 +26,7 @@ exports.registerUser = functions.https.onCall(async (data) => {
       nome,
       email,
       saldo: 0, // Inicia o saldo como 0 ou outro valor padrão
-      matriculas: [], // Inicia como uma lista vazia ou outro valor padrão
+      premium: false, // Inicia como uma lista vazia ou outro valor padrão
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 

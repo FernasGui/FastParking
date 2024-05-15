@@ -7,6 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 class RegisterPages extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
+
 }
 
 class _RegisterPageState extends State<RegisterPages> {
@@ -24,6 +25,7 @@ class _RegisterPageState extends State<RegisterPages> {
     _passwordController.dispose();
     super.dispose();
   }
+
 
 
 

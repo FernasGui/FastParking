@@ -67,34 +67,7 @@ class InfoPage extends StatelessWidget {
               height: 55.0,
               child: ElevatedButton(
                 onPressed: () {
-            String? userId = FirebaseAuth.instance.currentUser?.uid;
-                   if (userId != null) {
-                      FirebaseFirestore.instance
-                        .collection('EstacionamentoAtivo')
-                        .where('UID', isEqualTo: userId)
-                        .limit(1) // Limita a busca ao primeiro resultado encontrado
-                        .get()
-                        .then((querySnapshot) {
-                          if (querySnapshot.docs.isNotEmpty) { 
-                           simularSaida();
-                          } else {
-                           DialogoUtil.exibirJanelaInformativa(
-                              context,
-                              'Atenção',
-                              'Não tens nenhum estacionamento ativo',
-                            );
-                          }
-                        })
-                        .catchError((error) {
-                          // Trate o erro conforme necessário
-                        });
-                    } else {
-                        DialogoUtil.exibirJanelaInformativa(
-                              context,
-                              'Erro',
-                              'Faz login para utilizares a aplicação',
-                            );
-                  }
+                    exitParque(context);
                   
                 },
                 child: Text(
@@ -113,9 +86,41 @@ class InfoPage extends StatelessWidget {
     );
   }
 
-    Future<void> simularSaida() async {
+  void exitParque(BuildContext context){
+    String? userId = FirebaseAuth.instance.currentUser?.uid;
+                   if (userId != null) {
+                      FirebaseFirestore.instance
+                        .collection('EstacionamentoAtivo')
+                        .where('UID', isEqualTo: userId)
+                        .limit(1) // Limita a busca ao primeiro resultado encontrado
+                        .get()
+                        .then((querySnapshot) {
+                          if (querySnapshot.docs.isNotEmpty) { 
+                           simularSaida();
+                           ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Saída bem-sucedida!'), backgroundColor: Colors.green),
+                            );
+                          } else {
+                           DialogoUtil.exibirJanelaInformativa(
+                              context,
+                              'Atenção',
+                              'Não tens nenhum estacionamento ativo',
+                            );
+                          }
+                        })
+                        .catchError((error) {
+                          // Trate o erro conforme necessário
+                        });
+                    } else {
+                        DialogoUtil.exibirJanelaInformativa(
+                              context,
+                              'Erro',
+                              'Faz login para utilizares a aplicação',
+                            );
+                  }
+  }
 
-    
+    Future<void> simularSaida() async {
     User? user = FirebaseAuth.instance.currentUser;
     
     try {

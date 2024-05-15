@@ -12,6 +12,8 @@ const {registerUser} = require("./auth");
 const {checkSaldoAndGenerateQR} = require("./qrCode");
 const {registarEntradaEstacionamento} = require("./entradaParque");
 const {registarSaidaEstacionamento} = require("./saidaParque");
+const {cashback} = require("./cashback")
+const {lotacao} = require ("./lotacao");
 
 // ...aqui você pode adicionar mais funções a serem exportadas se necessário.
 exports.registerUser = registerUser;
@@ -19,3 +21,5 @@ exports.checkSaldoAndGenerateQR = checkSaldoAndGenerateQR;
 
 exports.registarEntradaEstacionamento = registarEntradaEstacionamento;
 exports.registarSaidaEstacionamento = registarSaidaEstacionamento;
+exports.cashback = cashback;
+exports.lotacao = lotacao;

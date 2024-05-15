@@ -13,9 +13,8 @@ class EstacionamentoManager {
     if (user != null) {
       try {
         final estacionamentoSnapshot = await FirebaseFirestore.instance
-            .collection('Estacionamentos')
-            .where('userId', isEqualTo: user.uid)
-            .where('estado', isEqualTo: 'ativo')
+            .collection('EstacionamentoAtivo')
+            .where('UID', isEqualTo: user.uid)
             .limit(1)
             .get();
 
@@ -23,9 +22,14 @@ class EstacionamentoManager {
           final estacionamentoData = estacionamentoSnapshot.docs.first.data();
           final zona = estacionamentoData['zona'];
           final lugar = estacionamentoData['lugar'];
-          DialogoUtil.exibirJanelaInformativa(context, 'Esqueceste-te do teu lugar? Andas com a cabeça no ar!', 'Zona: $zona Lugar: $lugar');
+          if(zona == null || zona == null){
+             DialogoUtil.exibirJanelaInformativa(context, 'Ainda não guardas-te o teu lugar', 'Vai a Registar Estacionamento no menu e diz-nos onde estacionaste o teu maquinão');
+          }
+          else{DialogoUtil.exibirJanelaInformativa(context, 'Esqueceste-te do teu lugar? Andas com a cabeça no ar!', 'Zona: $zona Lugar: $lugar');
+          }
+          
         } else {
-          DialogoUtil.exibirJanelaInformativa(context,'Nenhum estacionamento ativo', 'Você não possui um estacionamento ativo no momento.');
+          DialogoUtil.exibirJanelaInformativa(context,'Atenção', 'Não tens nenhum estacionamento ativo.');
         }
       } catch (e) {
         DialogoUtil.exibirJanelaInformativa(context,'Erro', 'Não foi possível buscar as informações de estacionamento: $e');

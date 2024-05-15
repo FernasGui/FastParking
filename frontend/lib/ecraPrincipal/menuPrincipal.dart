@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fastparking/autenticacao/loginPage.dart';
+import 'package:fastparking/checkPremium.dart';
 import 'package:fastparking/estacionamento/registarEstacionamento.dart';
 import 'package:fastparking/historico/historico.dart';
 import 'package:fastparking/matricula/gestaoMatricula.dart';
+import 'package:fastparking/notPremium.dart';
+import 'package:fastparking/ofertas/progresso.dart';
 import 'package:fastparking/premium/subscricaoPage.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fastparking/gestaoPagamento.dart';
-
 
 class MenuPrincipal extends StatefulWidget {
   MenuPrincipal({Key? key}) : super(key: key);
@@ -21,6 +23,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _userName = 'Usuário Anônimo';
   String _userEmail = 'No Email';
+  final PremiumService _premiumService = PremiumService();
 
   @override
   void initState() {
@@ -28,30 +31,36 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
     _getUserInfo();
   }
 
- void _getUserInfo() async {
-  User? user = _auth.currentUser;
-  if (user != null) {
-    // Busca o documento do usuário na coleção 'Users' pelo UID
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('Users').doc(user.uid).get();
+  void _getUserInfo() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      // Busca o documento do usuário na coleção 'Users' pelo UID
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
 
-    // Verifica se o documento existe e possui dados
-    if (userDoc.exists) {
-      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+      // Verifica se o documento existe e possui dados
+      if (userDoc.exists) {
+        Map<String, dynamic>? userData =
+            userDoc.data() as Map<String, dynamic>?;
 
-      // Atualiza a UI com o nome e o email do usuário
-      setState(() {
-        _userName = userData?['nome'] ?? 'Utilizador Anônimo'; // Substitua 'name' pela chave real usada para o nome na Firestore
-        _userEmail = user.email ?? 'No Email';
-      });
+        // Atualiza a UI com o nome e o email do usuário
+        setState(() {
+          _userName = userData?['nome'] ?? 'Utilizador Anônimo'; // Substitua 'name' pela chave real usada para o nome na Firestore
+          _userEmail = user.email ?? 'No Email';
+        });
+      }
     }
   }
-}
 
   void _logout() async {
     await _auth.signOut(); // Efetua o logout no Firebase
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()), // Redireciona para a tela de login
+      MaterialPageRoute(
+          builder: (context) =>
+              LoginPage()), // Redireciona para a tela de login
     );
   }
 
@@ -71,10 +80,13 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
               backgroundColor: Colors.white,
               child: Text(
                 _userName.isNotEmpty ? _userName[0] : "U",
-                style: TextStyle(fontSize: 40.0, color: Color.fromRGBO(221, 67, 106, 1),
+                style: TextStyle(
+                  fontSize: 40.0,
+                  color: Color.fromRGBO(221, 67, 106, 1),
+                ),
               ),
             ),
-          ), ),
+          ),
           _buildDrawerItem(
             icon: Icons.account_balance_wallet,
             text: 'Gestão de saldo',
@@ -84,7 +96,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
               ));
             },
           ),
-           _buildDrawerItem(
+          _buildDrawerItem(
             icon: Icons.location_on,
             text: 'Registar Estacionamento',
             onTap: () {
@@ -106,15 +118,15 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
             icon: Icons.drive_eta,
             text: 'Gestão de matrículas',
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => GestaoMatricula()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => GestaoMatricula()));
             },
           ),
           _buildDrawerItem(
             icon: Icons.star,
             text: 'Premium',
             onTap: () {
-               Navigator.of(context).push(MaterialPageRoute(
+              Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => PremiumPage(),
               ));
             },
@@ -122,8 +134,17 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
           _buildDrawerItem(
             icon: Icons.local_offer,
             text: 'Ofertas',
-            onTap: () {
-              // Ação para Ofertas
+            onTap: () async {
+              bool premium = await _premiumService.isUserPremium();
+              if (premium) {
+               Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => OfertasPage(),
+                ));
+              } else {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => notPremium(),
+                ));
+              }
             },
           ),
           _buildDrawerItem(
@@ -144,7 +165,10 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
     );
   }
 
-  Widget _buildDrawerItem({required IconData icon, required String text, required VoidCallback onTap}) {
+  Widget _buildDrawerItem(
+      {required IconData icon,
+      required String text,
+      required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
       title: Text(text),

@@ -27,7 +27,7 @@ void showMatriculasDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Com que máquina vieste hoje?'),
+        title: const Text('Com que máquina vieste hoje?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
         content: StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance.collection('Matriculas').doc(user.uid).snapshots(),
           builder: (context, snapshot) {
@@ -177,7 +177,7 @@ void generateQRCode(BuildContext context, String matricula) async {
     DialogoUtil.exibirJanelaInformativa(
       navigatorKey.currentState!.overlay!.context,
       'Sucesso',
-      'Entrada registrada com sucesso.',
+      'Entrada bem-sucedida!',
     );
   } on FirebaseFunctionsException catch (e) {
     

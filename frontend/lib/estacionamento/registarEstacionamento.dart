@@ -1,3 +1,4 @@
+import 'package:fastparking/dialogoUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,58 +13,42 @@ class _RegistarEstacionamentoState extends State<RegistarEstacionamento> {
   final _zonaController = TextEditingController();
   final _lugarController = TextEditingController();
 
-  void _verificarEAtualizarEstacionamento() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) {
+Future<void> _registarEstacionamento() async {
+ 
+ final user = FirebaseAuth.instance.currentUser;
+
+if (user == null) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Você não está logado.')),
     );
     return;
   }
-
-  // Verificar se já existe um estacionamento ativo
   final estacionamentosAtivosQuery = await FirebaseFirestore.instance
-      .collection('Estacionamentos')
-      .where('userId', isEqualTo: user.uid)
-      .where('estado', isEqualTo: 'ativo')
+      .collection('EstacionamentoAtivo')
+      .where('UID', isEqualTo: user.uid)
       .get();
 
   if (estacionamentosAtivosQuery.docs.isNotEmpty) {
     // Atualizar estacionamento ativo existente
     final docId = estacionamentosAtivosQuery.docs.first.id;
-    await FirebaseFirestore.instance.collection('Estacionamentos').doc(docId).update({
+    await FirebaseFirestore.instance.collection('EstacionamentoAtivo').doc(docId).update({
       'zona': _zonaController.text,
       'lugar': _lugarController.text,
       //'timestamp': FieldValue.serverTimestamp(), // Descomente se você quiser atualizar o timestamp também
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('O seu estacionamento ativo foi atualizado.')),
-    );
-  } else {
-    // Registrar um novo estacionamento
-    _registarEstacionamento();
-  }
-}
+      SnackBar(content: Text('O seu lugar foi guardado com sucesso.'),
+      backgroundColor: Colors.green),
 
-void _registarEstacionamento() {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    FirebaseFirestore.instance.collection('Estacionamentos').add({
-      'userId': user.uid,
-      'zona': _zonaController.text,
-      'lugar': _lugarController.text,
-      'estado': 'ativo',
-      //'timestamp': FieldValue.serverTimestamp(),
-    });
-    _zonaController.clear();
-    _lugarController.clear();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Estacionamento registado com sucesso!'),
-       backgroundColor: Colors.green),
     );
-  }
+    } else {
+    DialogoUtil.exibirJanelaInformativa(
+      context,
+      'Atenção',
+      'Não tens nenhum estacionamento ativo',
+      );
+    }
 }
-
 
   @override
   void dispose() {
@@ -131,7 +116,7 @@ Widget build(BuildContext context) {
               child: Container(
                 width: 120, // Defina a largura do botão aqui
                 child: ElevatedButton(
-                  onPressed: _verificarEAtualizarEstacionamento,
+                  onPressed: _registarEstacionamento,
                   child: Text('Guardar'),
                   style: ElevatedButton.styleFrom(
                     primary: Color(0xFF69285F),

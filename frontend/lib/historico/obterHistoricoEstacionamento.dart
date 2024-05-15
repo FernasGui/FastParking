@@ -10,6 +10,12 @@ import 'package:intl/intl.dart';
   return formattedTime;
 }
 
+String formatTimestampToDate(Timestamp timestamp) {
+  DateTime dateTime = timestamp.toDate().add(const Duration(days: 1));
+  String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+  return formattedDate;
+}
+
 void obterHistoricoEstacionamento(Function(List<Map<String, dynamic>>) callbackAtualizacaoUI) {
   String? userId = FirebaseAuth.instance.currentUser?.uid;
 
@@ -22,9 +28,8 @@ void obterHistoricoEstacionamento(Function(List<Map<String, dynamic>>) callbackA
     .then((querySnapshot) {
       List<Map<String, dynamic>> listaHistorico = querySnapshot.docs.map((doc) {
         
-        
         return {
-          'data': doc.data()['Data'] ?? '',
+          'data': formatTimestampToDate(doc.data()['HoraEntrada'] as Timestamp),
           'nomeParque': doc.data()['NomeParque'] ?? '',
           'entrada': formatTimestampToHourMinute(doc.data()['HoraEntrada']),
           'saida':formatTimestampToHourMinute(doc.data()['HoraSaida']),

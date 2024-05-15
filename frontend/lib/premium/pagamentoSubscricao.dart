@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -116,12 +118,13 @@ class _PagamentoPremiumState extends State<PagamentoPremium> {
     print('Nome: ${_nomeController.text}');
     print('Número do Cartão: ${_numeroController.text}');
     print('CVC: ${_cvcController.text}');
-    
+    _subscribeToPremium();
     Future.delayed(Duration(seconds: 1), () {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Subscrição efetuada com sucesso!'), backgroundColor: Colors.green),
       );
       dispose();
+
     });
   }
 
@@ -133,4 +136,24 @@ class _PagamentoPremiumState extends State<PagamentoPremium> {
     _validadeController.dispose();
     super.dispose();
   }
+
+  Future<void> _subscribeToPremium() async {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  if (user != null) {
+    String uid = user.uid;  // Obter o UID do usuário logado
+
+    // Acesso ao documento do usuário na coleção 'users' e atualização do campo 'premium'
+    await FirebaseFirestore.instance.collection('Users').doc(uid).update({
+      'premium': true,
+      'premiumAt': Timestamp.fromDate(DateTime.now()),
+    }).then((value) {
+      print("Usuário agora é premium");
+    }).catchError((error) {
+      print("Erro ao atualizar o status premium: $error");
+    });
+  } else {
+    print("Nenhum usuário logado");
+  }
+}
 }
