@@ -145,11 +145,11 @@ class _MapScreenState extends State<MapScreen> {
 Future<void> _addPredefinedMarkers() async {
 User? user = FirebaseAuth.instance.currentUser;
   if (user == null) {
-    print("User is not authenticated.");
+    print("Utilizador não está autenticado.");
     DialogoUtil.exibirJanelaInformativa(
       context,
-      'Authentication Error',
-      'You need to be logged in to view this data.',
+      'Erro de autenticação',
+      'Necessitas de estar logado.',
     );
     return;
   }

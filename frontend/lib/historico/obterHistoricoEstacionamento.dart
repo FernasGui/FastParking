@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 }
 
 String formatTimestampToDate(Timestamp timestamp) {
-  DateTime dateTime = timestamp.toDate().add(const Duration(days: 1));
+  DateTime dateTime = timestamp.toDate();
   String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
   return formattedDate;
 }

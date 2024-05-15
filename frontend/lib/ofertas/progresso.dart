@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fastparking/historico/historico.dart';
 import 'package:fastparking/ofertas/estacionamento.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -27,39 +28,39 @@ class _OfertasPageState extends State<OfertasPage> {
   }
 
   Future<void> _handleClaimOffer() async {
-  try {
-    final functions = FirebaseFunctions.instance;
-    HttpsCallable callable = functions.httpsCallable('cashback');
-    final results = await callable.call(<String, dynamic>{
-      'uid': FirebaseAuth.instance.currentUser?.uid,
-    });
+    try {
+      final functions = FirebaseFunctions.instance;
+      HttpsCallable callable = functions.httpsCallable('cashback');
+      final results = await callable.call(<String, dynamic>{
+        'uid': FirebaseAuth.instance.currentUser?.uid,
+      });
 
-    if (!mounted) return; // Verifica se o widget ainda está montado
+      if (!mounted) return; // Verifica se o widget ainda está montado
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${results.data['message']}'), backgroundColor: Colors.green,)
-    );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('${results.data['message']}'),
+        backgroundColor: Colors.green,
+      ));
 
-    // Resetar o progresso
-    setState(() {
-      progresso = 0.0;
-    });
-    
-  } on FirebaseFunctionsException catch (e) {
-    if (!mounted) return; // Verifica novamente antes de usar o context
+      // Resetar o progresso
+      setState(() {
+        progresso = 0.0;
+      });
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return; // Verifica novamente antes de usar o context
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Falha ao aplicar cashback: ${e.message}'), backgroundColor: Colors.red)
-    );
-  } catch (e) {
-    if (!mounted) return; // Verifica novamente antes de usar o context
-    
-    print(e); // Para debug
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Erro desconhecido ao tentar aplicar cashback.'), backgroundColor: Colors.red)
-    );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Falha ao aplicar cashback: ${e.message}'),
+          backgroundColor: Colors.red));
+    } catch (e) {
+      if (!mounted) return; // Verifica novamente antes de usar o context
+
+      print(e); // Para debug
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Erro desconhecido ao tentar aplicar cashback.'),
+          backgroundColor: Colors.red));
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -99,12 +100,12 @@ class _OfertasPageState extends State<OfertasPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            SizedBox(height: 200),
+            SizedBox(height: 180),
             GestureDetector(
               onTapDown: (_) => setState(() =>
                   scale = 0.6), // Reduz a escala quando o botão é pressionado
               onTapUp: (_) => setState(
-                  () => scale = 10.0), // Retorna à escala normal quando solto
+                  () => scale = 50.0), // Retorna à escala normal quando solto
               onTapCancel: () => setState(() => scale =
                   1.0), // Retorna à escala normal se o toque é cancelado
               child: AnimatedScale(
@@ -126,7 +127,23 @@ class _OfertasPageState extends State<OfertasPage> {
                       style: TextStyle(fontSize: 22)),
                 ),
               ),
-            )
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => HistoricoPage(),
+                ));
+              },
+              child: Text(
+                'Consultar histórico',
+                style: TextStyle(color: Colors.white),
+                textScaleFactor: 1.2,
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Color.fromRGBO(163, 53, 101, 1),
+              ),
+            ),
           ],
         ),
       ),
