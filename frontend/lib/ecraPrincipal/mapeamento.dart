@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fastparking/checkPremium.dart';
 import 'package:fastparking/dialogoUtil.dart';
 import 'package:fastparking/ecraPrincipal/customButton.dart';
@@ -113,7 +111,6 @@ class _MapScreenState extends State<MapScreen> {
         builder: (context) => InfoPage(),
       ));
     }
-    // Adicione mais condições if-else para outros ícones se necessário
   }
 
   @override
@@ -142,59 +139,59 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-Future<void> _addPredefinedMarkers() async {
-User? user = FirebaseAuth.instance.currentUser;
-  if (user == null) {
-    print("Utilizador não está autenticado.");
-    DialogoUtil.exibirJanelaInformativa(
-      context,
-      'Erro de autenticação',
-      'Necessitas de estar logado.',
-    );
-    return;
-  }
-
-
-  try {
-    String idParque = "P2";
-    var querySnapshot = await FirebaseFirestore.instance
-        .collection('Parques')
-        .where('id', isEqualTo: idParque)
-        .limit(5)
-        .get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      var doc = querySnapshot.docs.first;
-      int lotacao = doc.data()['lotacao'] ?? 0; // Certifique-se que 'lotacao' é um int no Firestore
-
-      // Adicionando marcadores com a lotação atualizada
-      _addMarkerAtPosition(
-        const LatLng(38.750623, -9.155030),
-        'parque_cidadeUniversitaria',
-        'Parque Estacionamento Cidade Universitária',
-        'Lotação: 400/400',
+  Future<void> _addPredefinedMarkers() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print("Utilizador não está autenticado.");
+      DialogoUtil.exibirJanelaInformativa(
+        context,
+        'Erro de autenticação',
+        'Necessitas de estar logado.',
       );
-
-      _addMarkerAtPosition(
-        const LatLng(38.7502099, -9.1594531),
-        'parque_estadioUniversitario',
-        'Parque Estacionamento Saba Estádio Universitário',
-        'Lotação: 200/200',
-      );
-
-      _addMarkerAtPosition(
-        const LatLng(38.7559056, -9.1514876),
-        'parque_campoGrande',
-        'Parque Estacionamento Campo Grande',
-        'Lotação: $lotacao/150',
-      );
-    } else {
-      print("Nenhum parque encontrado com o ID $idParque");
+      return;
     }
-  } catch (e) {
-    print("Erro ao buscar lotação: $e");
+
+    try {
+      String idParque = "P2";
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('Parques')
+          .where('id', isEqualTo: idParque)
+          .limit(5)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        int lotacao = doc.data()['lotacao'] ??
+            0; // Certifique-se que 'lotacao' é um int no Firestore
+
+        // Adicionando marcadores com a lotação atualizada
+        _addMarkerAtPosition(
+          const LatLng(38.750623, -9.155030),
+          'parque_cidadeUniversitaria',
+          'Parque Estacionamento Cidade Universitária',
+          'Lotação: 400/400',
+        );
+
+        _addMarkerAtPosition(
+          const LatLng(38.7502099, -9.1594531),
+          'parque_estadioUniversitario',
+          'Parque Estacionamento Saba Estádio Universitário',
+          'Lotação: 200/200',
+        );
+
+        _addMarkerAtPosition(
+          const LatLng(38.7559056, -9.1514876),
+          'parque_campoGrande',
+          'Parque Estacionamento Campo Grande',
+          'Lotação: $lotacao/150',
+        );
+      } else {
+        print("Nenhum parque encontrado com o ID $idParque");
+      }
+    } catch (e) {
+      print("Erro ao buscar lotação: $e");
+    }
   }
-}
 
   void _determinePosition() async {
     bool serviceEnabled;
@@ -420,7 +417,6 @@ User? user = FirebaseAuth.instance.currentUser;
             label: 'Informação',
           ),
         ],
-        // Implementar a lógica de navegação
       ),
     );
   }
