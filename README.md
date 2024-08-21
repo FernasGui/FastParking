@@ -8,7 +8,7 @@ Attached is some of the documentation required to carry out the project:
 [Pitch Deck FastParking.pptx](https://github.com/user-attachments/files/16700610/Pitch.Deck.FastParking.pptx)
 
 PT:
-**Projeto do qual fizemos uma aplicação móvel em Dart com o GoogleFireBase realizado no âmbito de quatro cadeiras da faculdade que foram: Conceção e Viabilidade de Projeto de Base Tecnológica, Desenvolvimento Projeto de Base Tecnológica, Arquitetura e Gestão de Sistemas de Informação e Gestão de Projectos de Tecnologia e Sistemas de Informação**
+**Projeto em que criamos uma aplicação móvel em Dart com o GoogleFireBase realizado no âmbito de quatro cadeiras da faculdade que foram: Conceção e Viabilidade de Projeto de Base Tecnológica, Desenvolvimento Projeto de Base Tecnológica, Arquitetura e Gestão de Sistemas de Informação e Gestão de Projectos de Tecnologia e Sistemas de Informação**
 Segue em anexo alguma da documentação necessária para efetuar o projeto
 
 #Dart
